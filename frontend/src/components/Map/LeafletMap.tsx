@@ -44,6 +44,7 @@ export const LeafletMap = memo<LeafletMapProps>(({
   const mapInstanceRef = useRef<L.Map | null>(null);
   const markersRef = useRef<L.Marker[]>([]);
   const routingControlRef = useRef<any>(null); // Routing control reference
+  const waypointMarkersRef = useRef<L.Marker[]>([]); // Waypoint markers reference
   
   // Existing state
   const [mapStyle, setMapStyle] = useState<'default' | 'satellite' | 'dark' | 'terrain'>('default');
@@ -66,13 +67,86 @@ export const LeafletMap = memo<LeafletMapProps>(({
   }, []);
 
   const handleMapClick = useCallback((e: L.LeafletMouseEvent) => {
-    if (!routingMode || !enableRouting) return;
+    if (!routingMode || !enableRouting || !mapInstanceRef.current) return;
     
     const clickPoint = e.latlng;
+    
+    // Clear old waypoint markers if we're starting fresh or replacing
+    if (waypointMarkersRef.current.length >= 2) {
+      waypointMarkersRef.current.forEach(marker => {
+        mapInstanceRef.current?.removeLayer(marker);
+      });
+      waypointMarkersRef.current = [];
+    }
+    
     setWaypoints(prev => {
       const newWaypoints = [...prev, clickPoint];
+      
+      // Create visual waypoint marker immediately
+      const isStart = prev.length === 0;
+      const markerColor = isStart ? '#22c55e' : '#ef4444'; // Green for start, Red for end
+      const markerLabel = isStart ? 'A' : 'B';
+      
+      const waypointMarker = L.marker(clickPoint, {
+        icon: L.divIcon({
+          html: `
+            <div style="
+              background: ${markerColor}; 
+              color: white;
+              border-radius: 50%; 
+              width: 40px; 
+              height: 40px; 
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              font-weight: bold;
+              font-size: 18px;
+              border: 3px solid white;
+              box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+              animation: bounce 0.5s ease;
+            ">${markerLabel}</div>
+            <style>
+              @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+              }
+            </style>
+          `,
+          iconSize: [40, 40],
+          iconAnchor: [20, 40],
+          className: 'routing-waypoint-marker'
+        }),
+        zIndexOffset: 1000 // Make sure waypoint markers appear above location markers
+      });
+      
+      waypointMarker.bindPopup(`
+        <div style="padding: 8px; font-family: Inter, sans-serif;">
+          <h4 style="margin: 0; font-size: 14px; font-weight: bold; color: ${markerColor};">
+            ${isStart ? '🚀 Start Point' : '🎯 End Point'}
+          </h4>
+          <p style="margin: 4px 0 0 0; font-size: 12px; color: #6b7280;">
+            ${isStart ? 'Click another location for destination' : 'Route will be calculated'}
+          </p>
+        </div>
+      `);
+      
+      waypointMarker.addTo(mapInstanceRef.current!);
+      waypointMarkersRef.current.push(waypointMarker);
+      
+      // Show toast notification
+      if (isStart) {
+        toast.success('📍 Start point selected! Click another location for destination', { duration: 2000 });
+      } else {
+        toast.success('🎯 End point selected! Calculating route...', { duration: 2000 });
+      }
+      
       // Limit to 2 waypoints for start/end
       if (newWaypoints.length > 2) {
+        // Remove the first waypoint marker when replacing
+        const oldMarker = waypointMarkersRef.current.shift();
+        if (oldMarker && mapInstanceRef.current) {
+          mapInstanceRef.current.removeLayer(oldMarker);
+        }
         return [newWaypoints[1], clickPoint]; // Keep the last and new point
       }
       return newWaypoints;
@@ -82,10 +156,20 @@ export const LeafletMap = memo<LeafletMapProps>(({
   const handleClearRoute = useCallback(() => {
     setWaypoints([]);
     setRouteInfo(null);
+    
+    // Remove routing control
     if (routingControlRef.current && mapInstanceRef.current) {
       mapInstanceRef.current.removeControl(routingControlRef.current);
       routingControlRef.current = null;
     }
+    
+    // Clear waypoint markers
+    waypointMarkersRef.current.forEach(marker => {
+      mapInstanceRef.current?.removeLayer(marker);
+    });
+    waypointMarkersRef.current = [];
+    
+    toast.success('Route cleared', { duration: 1500 });
   }, []);
 
   // Initialize map
@@ -172,31 +256,9 @@ export const LeafletMap = memo<LeafletMapProps>(({
         waypoints: waypoints,
         routeWhileDragging: false,
         addWaypoints: false,
-        createMarker: function(i: number, waypoint: any) {
-          const isStart = i === 0;
-          return L.marker(waypoint.latLng, {
-            icon: L.divIcon({
-              html: `
-                <div style="
-                  background: ${isStart ? '#22c55e' : '#ef4444'}; 
-                  color: white;
-                  border-radius: 50%; 
-                  width: 30px; 
-                  height: 30px; 
-                  display: flex; 
-                  align-items: center; 
-                  justify-content: center; 
-                  font-weight: bold;
-                  font-size: 14px;
-                  border: 2px solid white;
-                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                ">${isStart ? 'A' : 'B'}</div>
-              `,
-              iconSize: [30, 30],
-              iconAnchor: [15, 15],
-              className: 'routing-waypoint-marker'
-            })
-          });
+        // Don't create default markers - we handle them manually for better control
+        createMarker: function() {
+          return null; // Return null to prevent default markers
         },
         router: (L as any).Routing.osrmv1({
           serviceUrl: 'https://router.project-osrm.org/route/v1',
@@ -207,7 +269,9 @@ export const LeafletMap = memo<LeafletMapProps>(({
             { color: '#3b82f6', opacity: 0.8, weight: 6 },
             { color: '#ffffff', opacity: 0.9, weight: 4 }
           ]
-        }
+        },
+        show: false, // Hide the routing panel to keep UI clean
+        collapsible: false
       }).on('routesfound', function(e: any) {
         const routes = e.routes;
         if (routes && routes.length > 0) {

@@ -12,10 +12,11 @@ module.exports = [
     },
   },
 
-  // Backend ES Modules files
+  // Backend ES Modules files (including scripts that use import/export)
   {
     files: [
       'backend/src/**/*.js', 
+      'backend/scripts/**/*.js', // All backend scripts use ES modules
       'scripts/**/*.js',
     ],
     languageOptions: {
@@ -36,11 +37,11 @@ module.exports = [
     },
   },
 
-  // Backend CommonJS files (scripts, config files)
+  // Backend CommonJS files (config files only)
   {
     files: [
-      'backend/scripts/**/*.js',
       'backend/.eslintrc.cjs',
+      'backend/babel.config.js',
       '.eslintrc.js',
       'eslint.config.js',
       'eslint.config.cjs',
