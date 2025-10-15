@@ -13,6 +13,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import OrganizerDashboard from './pages/OrganizerDashboard';
 import AdminDashboard from './pages/AdminDashboard';
+import CreateEventPage from './pages/CreateEventPage';
+import EditEventPage from './pages/EditEventPage';
 
 function App() {
   const { checkAuth, isLoading } = useAuthStore();
@@ -90,6 +92,28 @@ function App() {
               <RouteErrorBoundary routeName="Organizer Dashboard">
                 <OrganizerRoute>
                   <OrganizerDashboard />
+                </OrganizerRoute>
+              </RouteErrorBoundary>
+            }
+          />
+
+          <Route
+            path="/events/create"
+            element={
+              <RouteErrorBoundary routeName="Create Event">
+                <OrganizerRoute>
+                  <CreateEventPage />
+                </OrganizerRoute>
+              </RouteErrorBoundary>
+            }
+          />
+
+          <Route
+            path="/events/:id/edit"
+            element={
+              <RouteErrorBoundary routeName="Edit Event">
+                <OrganizerRoute>
+                  <EditEventPage />
                 </OrganizerRoute>
               </RouteErrorBoundary>
             }
