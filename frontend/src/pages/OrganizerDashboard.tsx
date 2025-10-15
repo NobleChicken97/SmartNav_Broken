@@ -216,14 +216,27 @@ const OrganizerDashboard = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                          
+                          {/* Event Status Badge */}
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            status === 'upcoming' ? 'bg-green-100 text-green-800' :
-                            status === 'ongoing' ? 'bg-blue-100 text-blue-800' :
+                            event.status === 'published' ? 'bg-green-100 text-green-800' :
+                            event.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                          </span>
+                          
+                          {/* Time-based Status Badge */}
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                            status === 'ongoing' ? 'bg-purple-100 text-purple-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
                             {status.charAt(0).toUpperCase() + status.slice(1)}
                           </span>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          
+                          {/* Category Badge */}
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                             {event.category}
                           </span>
                         </div>
