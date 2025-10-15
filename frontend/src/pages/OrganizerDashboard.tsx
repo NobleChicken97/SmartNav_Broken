@@ -27,9 +27,18 @@ const OrganizerDashboard = () => {
       setLoading(true);
       setError(null);
       const data = await EventService.getMyEvents();
-      setEvents(data);
+      
+      // Guard against unexpected response structure
+      if (Array.isArray(data)) {
+        setEvents(data);
+      } else {
+        console.warn('Unexpected response structure from getMyEvents:', data);
+        setEvents([]);
+        setError('Received invalid data format from server');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load events');
+      setEvents([]); // Reset to empty array on error
       console.error('Failed to load organizer events:', err);
     } finally {
       setLoading(false);

@@ -77,6 +77,7 @@ eventSchema.index({ category: 1, dateTime: 1 });
 eventSchema.index({ locationId: 1, dateTime: 1 });
 eventSchema.index({ dateTime: 1 });
 eventSchema.index({ tags: 1 });
+eventSchema.index({ createdBy: 1, dateTime: -1 }); // For organizer dashboard getMyEvents() performance
 eventSchema.index({ title: 'text', description: 'text', tags: 'text' });
 
 // Virtual for available spots

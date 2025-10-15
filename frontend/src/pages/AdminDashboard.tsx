@@ -34,10 +34,25 @@ const AdminDashboard = () => {
         UserService.getAllUsers(),
         EventService.getEvents({ limit: 100 })
       ]);
-      setUsers(usersData);
-      setEvents(eventsData.events);
+      
+      // Guard against unexpected response structure
+      if (Array.isArray(usersData)) {
+        setUsers(usersData);
+      } else {
+        console.warn('Unexpected users data structure:', usersData);
+        setUsers([]);
+      }
+      
+      if (eventsData && Array.isArray(eventsData.events)) {
+        setEvents(eventsData.events);
+      } else {
+        console.warn('Unexpected events data structure:', eventsData);
+        setEvents([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
+      setUsers([]); // Reset to empty arrays on error
+      setEvents([]);
       console.error('Failed to load admin data:', err);
     } finally {
       setLoading(false);
