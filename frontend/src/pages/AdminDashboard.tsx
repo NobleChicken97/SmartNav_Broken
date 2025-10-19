@@ -20,6 +20,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
   const { user: currentUser } = useAuthStore();
 
   useEffect(() => {
@@ -87,12 +88,22 @@ const AdminDashboard = () => {
       return;
     }
 
+    // Add confirmation dialog
+    const user = users.find(u => u._id === userId);
+    const confirmMessage = `Are you sure you want to change ${user?.name || 'this user'}'s role to ${newRole}?`;
+    if (!confirm(confirmMessage)) {
+      return;
+    }
+
     try {
+      setUpdatingRoleId(userId);
       const updatedUser = await UserService.changeUserRole(userId, newRole);
       setUsers(users.map(u => u._id === userId ? updatedUser : u));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to change role');
       console.error('Failed to change role:', err);
+    } finally {
+      setUpdatingRoleId(null);
     }
   };
 
@@ -326,16 +337,23 @@ const AdminDashboard = () => {
                         <div className="text-sm text-gray-900">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={user.role}
-                          onChange={(e) => handleChangeRole(user._id, e.target.value as any)}
-                          disabled={user._id === currentUser?._id}
-                          className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${getRoleBadgeColor(user.role)} disabled:opacity-50 disabled:cursor-not-allowed`}
-                        >
-                          <option value="student">Student</option>
-                          <option value="organizer">Organizer</option>
-                          <option value="admin">Admin</option>
-                        </select>
+                        {updatingRoleId === user._id ? (
+                          <div className="flex items-center">
+                            <LoadingSpinner size="sm" />
+                            <span className="ml-2 text-xs text-gray-500">Updating...</span>
+                          </div>
+                        ) : (
+                          <select
+                            value={user.role}
+                            onChange={(e) => handleChangeRole(user._id, e.target.value as any)}
+                            disabled={user._id === currentUser?._id || updatingRoleId !== null}
+                            className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${getRoleBadgeColor(user.role)} disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            <option value="student">Student</option>
+                            <option value="organizer">Organizer</option>
+                            <option value="admin">Admin</option>
+                          </select>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}
