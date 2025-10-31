@@ -25,15 +25,17 @@ RUN apk update && apk upgrade && \
     apk add --no-cache dumb-init && \
     rm -rf /var/cache/apk/*
 
-# Security: Create non-root user
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S nginx -u 1001 -G nginx
+# Note: nginx user already exists in nginx:alpine image, no need to create it
 
 # Copy built app with correct ownership
 COPY --from=builder --chown=nginx:nginx /app/dist /usr/share/nginx/html
 
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Security: Change ownership of nginx directories
 RUN chown -R nginx:nginx /var/cache/nginx && \
@@ -50,4 +52,5 @@ ENTRYPOINT ["dumb-init", "--"]
 
 EXPOSE 3000
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx using our entrypoint script
+CMD ["/usr/local/bin/docker-entrypoint.sh"]

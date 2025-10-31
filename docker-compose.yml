@@ -74,6 +74,8 @@ services:
     read_only: true
     tmpfs:
       - /tmp
+      - /var/cache/nginx
+      - /var/run
 
 volumes:
   mongodb_data:
@@ -81,3 +83,4 @@ volumes:
 networks:
   smart-navigator-network:
     driver: bridge
+
