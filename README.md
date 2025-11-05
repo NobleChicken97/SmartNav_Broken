@@ -13,13 +13,15 @@
 ## ✨ Features
 
 - 🗺️ **Interactive Campus Map** - Leaflet-based mapping with custom markers
-- 🔍 **Smart Search** - Find buildings, rooms, and points of interest quickly  
-- 📍 **Location Management** - Add, edit, and manage campus locations
-- 🎯 **Categories** - Buildings, rooms, dining, recreation, and more
-- 👤 **User Authentication** - Role-based access (Student, Admin, Super Admin)
+- 🎉 **Event Management** - Create, manage, and display campus events on map
+- 🔍 **Smart Search** - Find buildings, rooms, events, and points of interest quickly  
+- 📍 **Location Management** - Add, edit, and manage campus locations (Admin)
+- 🎯 **Categories** - Buildings, rooms, dining, recreation, events, and more
+- � **Role-Based Access** - Student, Organizer, and Admin roles with proper permissions
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
-- 🔒 **Secure API** - JWT-based authentication with proper security measures
+- 🔒 **Secure API** - JWT authentication with HTTP-only cookies
 - ⚡ **Modern Tech Stack** - React 18, TypeScript, Node.js with ES Modules
+- 📚 **API Documentation** - Complete Swagger/OpenAPI documentation
 
 ## 🚀 Quick Start
 
@@ -59,10 +61,10 @@ The application will be available at:
 
 ## 📖 Documentation
 
-- **[ API Documentation](./docs/API.md)** - Backend API reference and examples  
-- **[🚀 Deployment Guide](./docs/DEPLOYMENT.md)** - Production deployment instructions
-- **[🎯 Current Status & Roadmap](./docs/ISSUES_AND_IMPROVEMENTS.md)** - Project health and future plans
 - **[📋 Development Rules](./.github/instructions/development.instructions.md)** - Coding standards for AI assistants
+- **[📋 Project Workflow](./.github/instructions/project.instructions.md)** - Student-friendly development workflow
+
+**Note:** Full API documentation available via Swagger at `http://localhost:5000/api-docs` when backend is running.
 
 ## 🏗️ Tech Stack
 
@@ -172,13 +174,32 @@ npm start                  # Start production server
 docker-compose up -d       # Start with Docker
 ```
 
-## 🤝 Contributing
+## 🎓 Project Status
 
-We welcome contributions! Please see our [Contributing Guide](./docs/CONTRIBUTING.md) for details.
+**Current Version:** 2.0.0 - Production Ready ✅
+
+### What's Working
+- ✅ Interactive campus map with Leaflet
+- ✅ Event markers with visual distinction (🎉 markers)
+- ✅ Location search and filtering
+- ✅ Role-based access control (Student, Organizer, Admin)
+- ✅ JWT authentication with HTTP-only cookies
+- ✅ Complete API with Swagger documentation
+- ✅ Docker deployment ready
+- ✅ Type-safe TypeScript codebase
+
+### Recent Updates (November 2025)
+- Implemented event markers on map with enhanced styling
+- Updated Swagger documentation with organizer role
+- Improved TypeScript type safety across all error handlers
+- Simplified architecture (removed NGINX, single rate limiter)
+- Cleaned up deprecated files and documentation
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
+3. Commit your changes (`git commit -m 'add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)  
 5. Open a Pull Request
 
