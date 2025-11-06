@@ -214,9 +214,6 @@ docker-compose up -d       # Start with Docker
 4. Push to the branch (`git push origin feature/amazing-feature`)  
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
@@ -224,11 +221,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **LinkedIn:** [linkedin.com/in/arpangoyal97](https://linkedin.com/in/arpangoyal97/)
 - **Institution:** Thapar Institute of Engineering & Technology
 
-## 🆘 Support
 
-- 📖 Check the [Documentation](./docs/)
-- 🐛 Report issues on [GitHub Issues](https://github.com/NobleChicken97/SmartNav/issues)
-- 💬 Ask questions in [Discussions](https://github.com/NobleChicken97/SmartNav/discussions)
-
----
-**⭐ If you find this project helpful, please consider giving it a star!**
