@@ -13,11 +13,13 @@
 ## ✨ Features
 
 - 🗺️ **Interactive Campus Map** - Leaflet-based mapping with custom markers
-- 🎉 **Event Management** - Create, manage, and display campus events on map
+- 🎉 **Event Management** - Create, manage, and display campus events with start/end times
+- ⏰ **Real-Time Event Status** - Automatic detection of upcoming, ongoing, and completed events
+- 📊 **Smart Dashboards** - Role-specific dashboards with clickable statistics and filtering
 - 🔍 **Smart Search** - Find buildings, rooms, events, and points of interest quickly  
 - 📍 **Location Management** - Add, edit, and manage campus locations (Admin)
 - 🎯 **Categories** - Buildings, rooms, dining, recreation, events, and more
-- � **Role-Based Access** - Student, Organizer, and Admin roles with proper permissions
+- 👥 **Role-Based Access** - Student, Organizer, and Admin roles with proper permissions
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 - 🔒 **Secure API** - JWT authentication with HTTP-only cookies
 - ⚡ **Modern Tech Stack** - React 18, TypeScript, Node.js with ES Modules
@@ -123,14 +125,17 @@ SmartNavigator/
 ## 🎯 Current Status
 
 **Project Grade:** A+ (96/100)  
-**Last Updated:** September 11, 2025
+**Last Updated:** November 6, 2025
 
 ### ✅ Completed Features
 - ✅ Full ES Modules conversion (Backend + Frontend)
 - ✅ Interactive Leaflet maps with campus locations
 - ✅ User authentication with JWT
 - ✅ Location CRUD operations
-- ✅ Role-based access control
+- ✅ **Event end time tracking with time ranges**
+- ✅ **Real-time event status detection (Upcoming/Ongoing/Completed)**
+- ✅ **Smart dashboards with clickable statistics**
+- ✅ Role-based access control (Student, Organizer, Admin)
 - ✅ Responsive design for all devices
 - ✅ Docker containerization
 - ✅ CI/CD pipeline with GitHub Actions
@@ -139,7 +144,7 @@ SmartNavigator/
 ### 🚧 In Progress  
 - 🔄 Enhanced test coverage
 - 🔄 Advanced map features (routing, categories)
-- � Performance optimizations
+- 🔄 Performance optimizations
 
 ### 🎯 Planned Features
 - 📋 Route planning between locations
@@ -189,11 +194,17 @@ docker-compose up -d       # Start with Docker
 - ✅ Type-safe TypeScript codebase
 
 ### Recent Updates (November 2025)
-- Implemented event markers on map with enhanced styling
-- Updated Swagger documentation with organizer role
-- Improved TypeScript type safety across all error handlers
-- Simplified architecture (removed NGINX, single rate limiter)
-- Cleaned up deprecated files and documentation
+- ✅ **Event end time tracking** - Events now have start and end times with validation
+- ✅ **Real-time event status** - Automatic detection of upcoming, ongoing, and completed events
+- ✅ **Enhanced dashboards** - Clickable statistics cards with smart filtering
+- ✅ **Event time ranges** - Display events with time ranges (e.g., "2:00 PM - 5:00 PM")
+- ✅ **Ongoing events monitoring** - Track and display currently active events
+- ✅ **Improved event management** - Dedicated cancel endpoint with proper state management
+- ✅ Implemented event markers on map with enhanced styling
+- ✅ Updated Swagger documentation with organizer role
+- ✅ Improved TypeScript type safety across all error handlers
+- ✅ Simplified architecture (removed NGINX, single rate limiter)
+- ✅ Cleaned up deprecated files and documentation
 
 ## 🤝 Contributing
 
