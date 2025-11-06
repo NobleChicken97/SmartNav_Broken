@@ -7,6 +7,7 @@ import { Location, Event } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { LeafletMap } from '../components/Map/LeafletMap';
 import SearchFilters from '../components/SearchFilters';
+import { ProfileDropdown } from '../components/ProfileDropdown';
 
 const MapPage: React.FC = () => {
   const { user } = useAuthStore();
@@ -22,22 +23,74 @@ const MapPage: React.FC = () => {
 
   useEffect(() => {
     loadInitialData();
-  }, []);
+  }, [user?.role]); // Reload when user role changes
+
+  // Reload data when component mounts or becomes visible again
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔄 MapPage: Page visible again, reloading data...');
+        loadInitialData();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user?.role]);
 
   const loadInitialData = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
+      console.log('🗺️ MapPage: Loading data for user role:', user?.role);
+
+      // For organizers, show only their own events
+      // For students/admins, show all upcoming events
+      const eventsPromise = user?.role === 'organizer' 
+        ? EventService.getMyEvents()
+        : EventService.getUpcomingEvents(50);
+
+      console.log('🗺️ MapPage: Using', user?.role === 'organizer' ? 'getMyEvents()' : 'getUpcomingEvents()');
+
       const [locationsResponse, eventsResponse] = await Promise.all([
         LocationService.getLocations({ limit: 100 }),
-        EventService.getUpcomingEvents(50),
+        eventsPromise,
       ]);
 
-      setLocations(locationsResponse.locations);
+      console.log('🗺️ MapPage: Loaded', eventsResponse.length, 'events');
+      console.log('🗺️ MapPage: Event titles:', eventsResponse.map(e => e.title));
+      console.log('🗺️ MapPage: Event creators:', eventsResponse.map(e => 
+        typeof e.createdBy === 'object' ? e.createdBy?.name : e.createdBy
+      ));
+
+      // For organizers, filter locations to only show those with their events
+      let filteredLocs = locationsResponse.locations;
+      if (user?.role === 'organizer') {
+        // Get unique location IDs from the organizer's events
+        const eventLocationIds = new Set(
+          eventsResponse
+            .map(event => typeof event.locationId === 'object' ? event.locationId._id : event.locationId)
+            .filter(Boolean)
+        );
+        
+        // Only show locations that have organizer's events
+        filteredLocs = locationsResponse.locations.filter(loc => 
+          eventLocationIds.has(loc._id)
+        );
+        
+        console.log('🗺️ MapPage: Organizer mode - filtered to', filteredLocs.length, 'locations with events');
+      }
+
+      setLocations(filteredLocs);
       setEvents(eventsResponse);
-      setFilteredLocations(locationsResponse.locations);
+      setFilteredLocations(filteredLocs);
       setFilteredEvents(eventsResponse);
+      
+      console.log('✅ MapPage: State updated with filtered events');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       console.error('Error loading initial data:', err);
@@ -90,41 +143,39 @@ const MapPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold site-title">Smart Navigator</h1>
-              <span className="ml-2 text-sm text-light">
-                Thapar Institute Campus
-              </span>
+              <div className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg">
+                <span className="text-white font-bold text-lg">LOGO</span>
+              </div>
             </div>
             
             {user && (
               <div className="flex items-center space-x-4">
                 {/* Dashboard Navigation based on role */}
-                {user.role === 'organizer' || user.role === 'admin' ? (
+                {/* Only show Organizer Dashboard for organizers, not admins */}
+                {user.role === 'organizer' && (
                   <Link
                     to="/organizer/dashboard"
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                    className="text-sm px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 font-medium rounded-lg border border-blue-200 transition-all"
                   >
                     📊 Organizer Dashboard
                   </Link>
-                ) : null}
+                )}
                 
                 {user.role === 'admin' && (
                   <Link
                     to="/admin/dashboard"
-                    className="text-sm text-red-600 hover:text-red-800 font-medium transition-colors"
+                    className="text-sm px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 font-medium rounded-lg border border-red-200 transition-all"
                   >
                     ⚙️ Admin Dashboard
                   </Link>
                 )}
                 
-                <span className="text-sm nav-link">
+                <span className="text-sm nav-link hidden sm:block">
                   Welcome, {user.name}
                 </span>
-                <div className="h-8 w-8 rounded-full flex items-center justify-center" style={{background: 'linear-gradient(135deg, var(--primary-green), var(--secondary-blue))'}}>
-                  <span className="text-white text-sm font-medium">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
+                
+                {/* Profile Dropdown with Logout */}
+                <ProfileDropdown />
               </div>
             )}
           </div>

@@ -59,7 +59,7 @@ const register = asyncHandler(async (req, res) => {
   res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict', // Prevent CSRF attacks
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // lax in dev for better compatibility
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 
@@ -106,7 +106,7 @@ const login = asyncHandler(async (req, res) => {
   res.cookie(process.env.COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict', // Prevent CSRF attacks
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // lax in dev for better compatibility
     maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
   });
 
@@ -133,7 +133,7 @@ const logout = asyncHandler(async (req, res) => {
   res.clearCookie(process.env.COOKIE_NAME, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict' // Must match cookie creation settings
+    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax' // Must match cookie creation settings
   });
 
   res.json({

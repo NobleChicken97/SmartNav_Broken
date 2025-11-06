@@ -105,6 +105,11 @@ export class EventService {
     return apiClient.delete(`/events/${id}`);
   }
 
+  static async cancelEvent(id: string): Promise<Event> {
+    const response = await apiClient.patch<{ success: boolean; message: string; data: { event: Event } }>(`/events/${id}/cancel`);
+    return response.data.event;
+  }
+
   static async registerForEvent(id: string): Promise<Event> {
     return apiClient.post<Event>(`/events/${id}/register`);
   }
@@ -141,6 +146,18 @@ export class EventService {
     return new Date(event.dateTime) > new Date();
   }
 
+  static isEventOngoing(event: Event): boolean {
+    // If endDateTime is missing, event cannot be ongoing
+    if (!event.endDateTime) {
+      return false;
+    }
+    
+    const now = new Date();
+    const startTime = new Date(event.dateTime);
+    const endTime = new Date(event.endDateTime);
+    return now >= startTime && now <= endTime;
+  }
+
   static isEventToday(event: Event): boolean {
     const eventDate = new Date(event.dateTime);
     const today = new Date();
@@ -153,36 +170,63 @@ export class EventService {
 
   static getEventStatus(event: Event): 'upcoming' | 'ongoing' | 'completed' {
     const now = new Date();
-    const eventDate = new Date(event.dateTime);
+    const startTime = new Date(event.dateTime);
     
-    if (eventDate > now) {
-      return 'upcoming';
-    } else if (eventDate.getDate() === now.getDate()) {
-      return 'ongoing';
-    } else {
-      return 'completed';
+    // If endDateTime is missing (old events), fall back to checking only start time
+    if (!event.endDateTime) {
+      return startTime > now ? 'upcoming' : 'completed';
     }
+    
+    const endTime = new Date(event.endDateTime);
+    
+    // Check if event is currently ongoing (between start and end time)
+    if (now >= startTime && now <= endTime) {
+      return 'ongoing';
+    }
+    
+    // Check if event hasn't started yet
+    if (startTime > now) {
+      return 'upcoming';
+    }
+    
+    // Event has ended
+    return 'completed';
   }
 
   static formatEventDateTime(event: Event): {
     date: string;
     time: string;
+    timeRange: string;
     fullDateTime: string;
   } {
-    const eventDate = new Date(event.dateTime);
+    const startDate = new Date(event.dateTime);
+    
+    const startTime = startDate.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    
+    // Handle events without endDateTime (old events)
+    let timeRange = startTime;
+    if (event.endDateTime) {
+      const endDate = new Date(event.endDateTime);
+      const endTime = endDate.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      timeRange = `${startTime} - ${endTime}`;
+    }
     
     return {
-      date: eventDate.toLocaleDateString('en-US', {
+      date: startDate.toLocaleDateString('en-US', {
         weekday: 'long',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
       }),
-      time: eventDate.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      fullDateTime: eventDate.toLocaleString('en-US', {
+      time: startTime, // Start time only (for backward compatibility)
+      timeRange, // Full time range if available, otherwise just start time
+      fullDateTime: startDate.toLocaleString('en-US', {
         weekday: 'short',
         year: 'numeric',
         month: 'short',

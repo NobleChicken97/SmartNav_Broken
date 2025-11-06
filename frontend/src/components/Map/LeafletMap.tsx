@@ -403,6 +403,9 @@ export const LeafletMap = memo<LeafletMapProps>(({
 
     // Add event markers (if provided)
     if (showEvents && Array.isArray(events) && events.length > 0) {
+      console.log('🗺️ LeafletMap: Rendering', events.length, 'event markers');
+      console.log('🗺️ LeafletMap: Event titles:', events.map(e => e.title));
+      
       // Clear existing event markers
       eventMarkersRef.current.forEach(marker => {
         mapInstanceRef.current?.removeLayer(marker);

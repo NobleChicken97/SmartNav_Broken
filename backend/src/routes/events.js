@@ -5,6 +5,7 @@ import {
   getEvent,
   createEvent,
   updateEvent,
+  cancelEvent,
   deleteEvent,
   getRecommendedEvents,
   registerForEvent,
@@ -47,6 +48,13 @@ router.put('/:id',
   isEventOwner, // Checks ownership or admin
   validateEvent,
   updateEvent
+);
+
+// Cancel event route - No validation needed, just updates status
+router.patch('/:id/cancel',
+  validateObjectId,
+  isEventOwner, // Checks ownership or admin
+  cancelEvent
 );
 
 router.delete('/:id', 

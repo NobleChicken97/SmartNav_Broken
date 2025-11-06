@@ -210,6 +210,7 @@ const createSampleEvents = async (locations, users) => {
       category: "workshop",
       locationId: academicBlock._id,
       dateTime: new Date(tomorrow.setHours(14, 0, 0, 0)),
+      endDateTime: new Date(tomorrow.setHours(17, 0, 0, 0)), // 3-hour workshop
       capacity: 50,
       organizer: "Tech Club President",
       createdBy: techClubOrganizer._id,
@@ -221,6 +222,7 @@ const createSampleEvents = async (locations, users) => {
       category: "cultural",
       locationId: studentCenter._id,
       dateTime: new Date(nextWeek.setHours(9, 0, 0, 0)),
+      endDateTime: new Date(new Date(nextWeek).setHours(18, 0, 0, 0)), // 9 AM to 6 PM
       capacity: 500,
       organizer: "Tech Club President",
       createdBy: techClubOrganizer._id,
@@ -232,6 +234,7 @@ const createSampleEvents = async (locations, users) => {
       category: "sports",
       locationId: sportsComplex._id,
       dateTime: new Date(nextWeek.setHours(16, 0, 0, 0)),
+      endDateTime: new Date(new Date(nextWeek).setHours(20, 0, 0, 0)), // 4-hour tournament
       capacity: 200,
       organizer: "Sports Committee Lead",
       createdBy: sportsOrganizer._id,
@@ -243,6 +246,7 @@ const createSampleEvents = async (locations, users) => {
       category: "seminar",
       locationId: lectureHall._id,
       dateTime: new Date(nextMonth.setHours(11, 0, 0, 0)),
+      endDateTime: new Date(new Date(nextMonth).setHours(13, 0, 0, 0)), // 2-hour seminar
       capacity: 100,
       organizer: "Tech Club President",
       createdBy: techClubOrganizer._id,
@@ -254,6 +258,7 @@ const createSampleEvents = async (locations, users) => {
       category: "academic",
       locationId: library._id,
       dateTime: new Date(tomorrow.setHours(10, 0, 0, 0)),
+      endDateTime: new Date(new Date(tomorrow).setHours(12, 0, 0, 0)), // 2-hour workshop
       capacity: 30,
       organizer: "Tech Club President",
       createdBy: techClubOrganizer._id,
@@ -265,6 +270,7 @@ const createSampleEvents = async (locations, users) => {
       category: "cultural",
       locationId: studentCenter._id,
       dateTime: new Date(nextWeek.setHours(19, 0, 0, 0)),
+      endDateTime: new Date(new Date(nextWeek).setHours(22, 0, 0, 0)), // 3-hour cultural event
       capacity: 300,
       organizer: "Cultural Society Head",
       createdBy: culturalOrganizer._id,

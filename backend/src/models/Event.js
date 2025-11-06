@@ -35,6 +35,17 @@ const eventSchema = new mongoose.Schema({
       message: 'Event date must be in the future'
     }
   },
+  endDateTime: {
+    type: Date,
+    required: [true, 'Event end date and time is required'],
+    validate: {
+      validator: function(value) {
+        // End time must be after start time
+        return this.dateTime && value > this.dateTime;
+      },
+      message: 'Event end time must be after start time'
+    }
+  },
   capacity: {
     type: Number,
     min: [1, 'Capacity must be at least 1'],

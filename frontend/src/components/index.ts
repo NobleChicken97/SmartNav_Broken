@@ -4,3 +4,4 @@ export { default as AdminRoute } from './AdminRoute';
 export { default as OrganizerRoute } from './OrganizerRoute';
 export { default as SearchFilters } from './SearchFilters';
 export { LeafletMap } from './Map/LeafletMap';
+export { ProfileDropdown } from './ProfileDropdown';

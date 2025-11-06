@@ -107,42 +107,52 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       set({ isLoading: true });
       await AuthService.logout();
       set({ 
-  user: null, 
-  isAuthenticated: false, 
+        user: null, 
+        isAuthenticated: false, 
         isLoading: false,
-  error: null,
-  _hasCheckedOnce: false,
+        error: null,
+        // Keep _hasCheckedOnce: true to allow PrivateRoute to redirect properly
       });
     } catch (error) {
       // Even if logout fails on server, clear local state
       set({ 
-  user: null, 
-  isAuthenticated: false, 
+        user: null, 
+        isAuthenticated: false, 
         isLoading: false,
-  error: error instanceof Error ? error.message : 'Logout failed',
-  _hasCheckedOnce: false,
+        error: error instanceof Error ? error.message : 'Logout failed',
+        // Keep _hasCheckedOnce: true to allow PrivateRoute to redirect properly
       });
     }
   },
 
   checkAuth: async () => {
-    // Prevent multiple simultaneous or duplicate auth checks (e.g., StrictMode double-invoke)
+    // Prevent multiple simultaneous auth checks (e.g., StrictMode double-invoke)
     const state = get();
-    if (state.isLoading || state._hasCheckedOnce) {
-      logger.log('🔍 Auth Store: Auth check already in progress or done, skipping');
+    
+    logger.log('🔍 Auth Store: checkAuth called. Current state:', {
+      isLoading: state.isLoading,
+      hasUser: !!state.user,
+      _hasCheckedOnce: state._hasCheckedOnce
+    });
+    
+    if (state.isLoading) {
+      logger.log('🔍 Auth Store: Auth check already in progress, skipping');
+      return;
+    }
+
+    // Skip if already checked AND user is authenticated (session valid)
+    // But allow recheck if user is null (could be new tab/page reload)
+    if (state._hasCheckedOnce && state.user !== null) {
+      logger.log('🔍 Auth Store: Auth already verified, skipping');
       return;
     }
 
     try {
       logger.log('🔍 Auth Store: Starting auth check...');
-      // If no auth cookie, skip the request to avoid 401 noise
-      if (!AuthService.hasAuthCookie()) {
-        set({ user: null, isAuthenticated: false, isLoading: false, error: null, _hasCheckedOnce: true });
-        logger.log('🔍 Auth Store: No auth cookie present; treating as guest');
-        return;
-      }
-
       set({ isLoading: true });
+      
+      // Try to get current user (cookie is sent automatically with request)
+      logger.log('🔍 Auth Store: Calling getCurrentUser API...');
       const user = await AuthService.getCurrentUser();
       logger.log('🔍 Auth Store: Auth check successful, user:', user);
       set({ 
@@ -152,9 +162,10 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         error: null,
         _hasCheckedOnce: true,
       });
-  } catch {
-      // Treat unauthenticated as a normal state: no visible errors
-      logger.log('🔍 Auth Store: Not authenticated yet (expected when visiting as guest)');
+      logger.log('🔍 Auth Store: State updated - authenticated');
+  } catch (error) {
+      // No valid session - treat as guest (expected for non-logged-in users)
+      logger.log('🔍 Auth Store: Not authenticated (no valid session cookie)', error);
       set({ 
         user: null, 
         isAuthenticated: false, 
@@ -162,6 +173,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         error: null,
         _hasCheckedOnce: true,
       });
+      logger.log('🔍 Auth Store: State updated - guest mode');
     }
   },
 

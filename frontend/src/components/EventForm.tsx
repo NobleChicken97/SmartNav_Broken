@@ -33,6 +33,7 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, onSubmit, onCancel, 
     category: initialData?.category || 'academic',
     locationId: typeof initialData?.locationId === 'string' ? initialData.locationId : initialData?.locationId?._id || '',
     dateTime: initialData?.dateTime ? new Date(initialData.dateTime).toISOString().slice(0, 16) : '',
+    endDateTime: initialData?.endDateTime ? new Date(initialData.endDateTime).toISOString().slice(0, 16) : '',
     capacity: initialData?.capacity || 50,
     organizer: initialData?.organizer || '',
     tags: initialData?.tags || [],
@@ -87,6 +88,16 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, onSubmit, onCancel, 
       const selectedDate = new Date(formData.dateTime);
       if (selectedDate <= new Date()) {
         newErrors.dateTime = 'Event date must be in the future';
+      }
+    }
+
+    if (!formData.endDateTime) {
+      newErrors.endDateTime = 'End date and time is required';
+    } else if (formData.dateTime) {
+      const startDate = new Date(formData.dateTime);
+      const endDate = new Date(formData.endDateTime);
+      if (endDate <= startDate) {
+        newErrors.endDateTime = 'End time must be after start time';
       }
     }
 
@@ -255,10 +266,10 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, onSubmit, onCancel, 
 
       {/* Date & Time and Capacity Row */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {/* Date & Time */}
+        {/* Start Date & Time */}
         <div>
           <label htmlFor="dateTime" className="block text-sm font-medium text-gray-700">
-            Date & Time *
+            Start Date & Time *
           </label>
           <input
             type="datetime-local"
@@ -272,6 +283,48 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, onSubmit, onCancel, 
             }`}
           />
           {errors.dateTime && <p className="mt-1 text-sm text-red-600">{errors.dateTime}</p>}
+        </div>
+
+        {/* End Date & Time */}
+        <div>
+          <label htmlFor="endDateTime" className="block text-sm font-medium text-gray-700">
+            End Date & Time *
+          </label>
+          <input
+            type="datetime-local"
+            id="endDateTime"
+            value={formData.endDateTime}
+            onChange={(e) => setFormData({ ...formData, endDateTime: e.target.value })}
+            className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm sm:text-sm bg-white text-gray-900 ${
+              errors.endDateTime
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+            }`}
+          />
+          {errors.endDateTime && <p className="mt-1 text-sm text-red-600">{errors.endDateTime}</p>}
+        </div>
+      </div>
+
+      {/* Organizer and Capacity Row */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {/* Organizer moved here */}
+        <div>
+          <label htmlFor="organizer" className="block text-sm font-medium text-gray-700">
+            Organizer Name *
+          </label>
+          <input
+            type="text"
+            id="organizer"
+            value={formData.organizer}
+            onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
+            placeholder="Enter organizer name"
+            className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm sm:text-sm bg-white text-gray-900 ${
+              errors.organizer
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+            }`}
+          />
+          {errors.organizer && <p className="mt-1 text-sm text-red-600">{errors.organizer}</p>}
         </div>
 
         {/* Capacity */}
@@ -293,26 +346,6 @@ const EventForm: React.FC<EventFormProps> = ({ initialData, onSubmit, onCancel, 
           />
           {errors.capacity && <p className="mt-1 text-sm text-red-600">{errors.capacity}</p>}
         </div>
-      </div>
-
-      {/* Organizer */}
-      <div>
-        <label htmlFor="organizer" className="block text-sm font-medium text-gray-700">
-          Organizer Name *
-        </label>
-        <input
-          type="text"
-          id="organizer"
-          value={formData.organizer}
-          onChange={(e) => setFormData({ ...formData, organizer: e.target.value })}
-          className={`mt-1 block w-full px-3 py-2 rounded-md shadow-sm sm:text-sm bg-white text-gray-900 ${
-            errors.organizer
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-          placeholder="Enter organizer name"
-        />
-        {errors.organizer && <p className="mt-1 text-sm text-red-600">{errors.organizer}</p>}
       </div>
 
       {/* Tags */}

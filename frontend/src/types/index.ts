@@ -109,6 +109,7 @@ export interface Event {
   category: EventCategory;
   locationId: Location | string;
   dateTime: string;
+  endDateTime?: string; // End date and time for the event (optional for backward compatibility)
   capacity: number;
   attendees: EventAttendee[];
   tags: string[];
@@ -144,6 +145,7 @@ export interface EventFormData {
   category: EventCategory;
   locationId: string;
   dateTime: string;
+  endDateTime: string; // End date and time for the event
   capacity: number;
   organizer: string;
   tags: string[];

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { EventService } from '../services/eventService';
 import { UserService } from '../services/user';
 import { useAuthStore } from '../stores/authStore';
@@ -14,6 +15,7 @@ import { getRoleBadgeColor } from '../utils/permissions';
 type Tab = 'overview' | 'users' | 'events';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [users, setUsers] = useState<User[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -21,6 +23,8 @@ const AdminDashboard = () => {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
+  const [selectedOrganizer, setSelectedOrganizer] = useState<string>('all'); // Filter by organizer
+  const [eventStatusFilter, setEventStatusFilter] = useState<'all' | 'upcoming' | 'ongoing' | 'completed' | 'canceled'>('all'); // Filter by event status
   const { user: currentUser } = useAuthStore();
 
   useEffect(() => {
@@ -124,14 +128,73 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleCancelEvent = async (eventId: string) => {
+    if (!confirm('Are you sure you want to cancel this event? Attendees will be notified.')) {
+      return;
+    }
+
+    try {
+      setDeletingId(eventId);
+      const cancelledEvent = await EventService.cancelEvent(eventId);
+      
+      // Update the event in the list with the cancelled version
+      setEvents(prevEvents => 
+        prevEvents.map(e => e._id === eventId ? cancelledEvent : e)
+      );
+      
+      // Show success message
+      // alert('Event cancelled successfully');
+    } catch (err) {
+      console.error('Failed to cancel event:', err);
+      alert(err instanceof Error ? err.message : 'Failed to cancel event');
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleEditEvent = (eventId: string) => {
+    navigate(`/events/${eventId}/edit`);
+  };
+
   // Calculate statistics
   const totalUsers = users.length;
   const adminCount = users.filter(u => u.role === 'admin').length;
   const organizerCount = users.filter(u => u.role === 'organizer').length;
   const studentCount = users.filter(u => u.role === 'student').length;
   const totalEvents = events.length;
-  const upcomingEvents = events.filter(e => EventService.isEventUpcoming(e)).length;
+  
+  // Exclude cancelled events from time-based status counts
+  const upcomingEventsCount = events.filter(e => e.status !== 'cancelled' && EventService.getEventStatus(e) === 'upcoming').length;
+  const ongoingEventsCount = events.filter(e => e.status !== 'cancelled' && EventService.getEventStatus(e) === 'ongoing').length;
+  const completedEventsCount = events.filter(e => e.status !== 'cancelled' && EventService.getEventStatus(e) === 'completed').length;
+  const canceledEventsCount = events.filter(e => e.status === 'cancelled').length;
   const totalRegistrations = events.reduce((sum, e) => sum + e.attendees.length, 0);
+
+  // Get unique organizers from events
+  const organizers = Array.from(new Set(events.map(e => e.organizer))).sort();
+
+  // Filter events by selected organizer and status
+  const filteredEvents = events.filter(event => {
+    // Filter by organizer
+    const matchesOrganizer = selectedOrganizer === 'all' || event.organizer === selectedOrganizer;
+    
+    // Filter by event status
+    let matchesStatus = true;
+    if (eventStatusFilter !== 'all') {
+      if (eventStatusFilter === 'canceled') {
+        matchesStatus = event.status === 'cancelled';
+      } else {
+        // For upcoming/ongoing/completed, exclude cancelled events
+        const status = EventService.getEventStatus(event);
+        matchesStatus = status === eventStatusFilter && event.status !== 'cancelled';
+      }
+    } else {
+      // When showing 'all', exclude cancelled events (they have their own filter)
+      matchesStatus = event.status !== 'cancelled';
+    }
+    
+    return matchesOrganizer && matchesStatus;
+  });
 
   if (loading) {
     return (
@@ -146,10 +209,23 @@ const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="mt-2 text-gray-600">
-            System administration and management
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+              <p className="mt-2 text-gray-600">
+                System administration and management
+              </p>
+            </div>
+            <Link
+              to="/map"
+              className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            >
+              <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              Go to Map
+            </Link>
+          </div>
         </div>
 
         {/* Error State */}
@@ -245,7 +321,7 @@ const AdminDashboard = () => {
                   </div>
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Upcoming Events</p>
-                    <p className="text-2xl font-bold text-gray-900">{upcomingEvents}</p>
+                    <p className="text-2xl font-bold text-gray-900">{upcomingEventsCount}</p>
                   </div>
                 </div>
               </div>
@@ -378,47 +454,264 @@ const AdminDashboard = () => {
         {/* Events Tab */}
         {activeTab === 'events' && (
           <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="divide-y divide-gray-200">
-              {events.map(event => {
-                const { date, time } = EventService.formatEventDateTime(event);
-                const status = EventService.getEventStatus(event);
-
-                return (
-                  <div key={event._id} className="p-6 hover:bg-gray-50">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            status === 'upcoming' ? 'bg-green-100 text-green-800' :
-                            status === 'ongoing' ? 'bg-blue-100 text-blue-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                          </span>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {event.category}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mb-2">{event.description}</p>
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                          <span>📅 {date}</span>
-                          <span>🕐 {time}</span>
-                          <span>👥 {event.attendees.length}/{event.capacity}</span>
-                          <span>👤 By: {event.organizer}</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleDeleteEvent(event._id)}
-                        disabled={deletingId === event._id}
-                        className="ml-4 px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 disabled:opacity-50"
-                      >
-                        {deletingId === event._id ? 'Deleting...' : 'Delete'}
-                      </button>
+            {/* Events Header with Filters and Create Button */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">All Events</h2>
+                <Link
+                  to="/events/create"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Create Event
+                </Link>
+              </div>
+              
+              {/* Event Statistics Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                {/* Upcoming Events */}
+                <button
+                  onClick={() => setEventStatusFilter(eventStatusFilter === 'upcoming' ? 'all' : 'upcoming')}
+                  className={`bg-blue-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'upcoming' ? 'ring-2 ring-blue-500 shadow-md' : ''
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-blue-100 rounded-md p-2">
+                      <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-medium text-gray-600">Upcoming</p>
+                      <p className="text-xl font-bold text-gray-900">{upcomingEventsCount}</p>
                     </div>
                   </div>
-                );
-              })}
+                </button>
+
+                {/* Ongoing Events */}
+                <button
+                  onClick={() => setEventStatusFilter(eventStatusFilter === 'ongoing' ? 'all' : 'ongoing')}
+                  className={`bg-purple-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'ongoing' ? 'ring-2 ring-purple-500 shadow-md' : ''
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-purple-100 rounded-md p-2">
+                      <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-medium text-gray-600">Ongoing</p>
+                      <p className="text-xl font-bold text-gray-900">{ongoingEventsCount}</p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Completed Events */}
+                <button
+                  onClick={() => setEventStatusFilter(eventStatusFilter === 'completed' ? 'all' : 'completed')}
+                  className={`bg-green-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'completed' ? 'ring-2 ring-green-500 shadow-md' : ''
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-green-100 rounded-md p-2">
+                      <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-medium text-gray-600">Completed</p>
+                      <p className="text-xl font-bold text-gray-900">{completedEventsCount}</p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Canceled Events */}
+                <button
+                  onClick={() => setEventStatusFilter(eventStatusFilter === 'canceled' ? 'all' : 'canceled')}
+                  className={`bg-red-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'canceled' ? 'ring-2 ring-red-500 shadow-md' : ''
+                  }`}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-red-100 rounded-md p-2">
+                      <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-medium text-gray-600">Canceled</p>
+                      <p className="text-xl font-bold text-gray-900">{canceledEventsCount}</p>
+                    </div>
+                  </div>
+                </button>
+
+                {/* Total Registrations */}
+                <div className="bg-indigo-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 bg-indigo-100 rounded-md p-2">
+                      <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-xs font-medium text-gray-600">Registrations</p>
+                      <p className="text-xl font-bold text-gray-900">{totalRegistrations}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Organizer Filter */}
+              <div className="flex items-center gap-3">
+                <label htmlFor="organizer-filter" className="text-sm font-medium text-gray-700">
+                  Filter by Organizer:
+                </label>
+                <select
+                  id="organizer-filter"
+                  value={selectedOrganizer}
+                  onChange={(e) => setSelectedOrganizer(e.target.value)}
+                  className="block px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900"
+                >
+                  <option value="all">All Organizers ({events.length})</option>
+                  {organizers.map(organizer => {
+                    const count = events.filter(e => e.organizer === organizer).length;
+                    return (
+                      <option key={organizer} value={organizer}>
+                        {organizer} ({count})
+                      </option>
+                    );
+                  })}
+                </select>
+                <span className="text-sm text-gray-500">
+                  Showing {filteredEvents.length} of {events.length} events
+                </span>
+              </div>
+            </div>
+
+            <div className="divide-y divide-gray-200">
+              {filteredEvents.length === 0 ? (
+                <div className="text-center py-12">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">
+                    {selectedOrganizer === 'all' ? 'No events yet' : `No events by ${selectedOrganizer}`}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    {selectedOrganizer === 'all' 
+                      ? 'Get started by creating the first event.'
+                      : 'Try selecting a different organizer or create a new event.'}
+                  </p>
+                </div>
+              ) : (
+                filteredEvents.map(event => {
+                  const { date, timeRange } = EventService.formatEventDateTime(event);
+                  const status = EventService.getEventStatus(event);
+
+                  return (
+                    <div key={event._id} className="p-6 hover:bg-gray-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                            
+                            {/* Event Status Badge */}
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              event.status === 'published' ? 'bg-green-100 text-green-800' :
+                              event.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                            }`}>
+                              {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+                            </span>
+                            
+                            {/* Time-based Status Badge - only show for non-cancelled events */}
+                            {event.status !== 'cancelled' && (
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                                status === 'ongoing' ? 'bg-purple-100 text-purple-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                              </span>
+                            )}
+                            
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                              {event.category}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-2">{event.description}</p>
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                            <span>📅 {date}</span>
+                            <span>🕐 {timeRange}</span>
+                            <span>👥 {event.attendees.length}/{event.capacity}</span>
+                            <span>👤 By: {event.organizer}</span>
+                          </div>
+                        </div>
+                        
+                        {/* Action Buttons */}
+                        <div className="ml-6 flex items-center gap-2">
+                          <button
+                            onClick={() => handleEditEvent(event._id)}
+                            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                            title="Edit event"
+                          >
+                            <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                          </button>
+                          
+                          {/* Cancel button - only for upcoming events that aren't already cancelled */}
+                          {status === 'upcoming' && event.status !== 'cancelled' && (
+                            <button
+                              onClick={() => handleCancelEvent(event._id)}
+                              disabled={deletingId === event._id}
+                              className="inline-flex items-center px-3 py-2 border border-orange-300 shadow-sm text-sm leading-4 font-medium rounded-md text-orange-700 bg-white hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                              title="Cancel event"
+                            >
+                              {deletingId === event._id ? (
+                                <LoadingSpinner size="sm" />
+                              ) : (
+                                <>
+                                  <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                  Cancel
+                                </>
+                              )}
+                            </button>
+                          )}
+                          
+                          <button
+                            onClick={() => handleDeleteEvent(event._id)}
+                            disabled={deletingId === event._id}
+                            className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm leading-4 font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title="Delete event"
+                          >
+                            {deletingId === event._id ? (
+                              <LoadingSpinner size="sm" />
+                            ) : (
+                              <>
+                                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                Delete
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         )}

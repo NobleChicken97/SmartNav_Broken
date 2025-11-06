@@ -4,7 +4,6 @@ import { useMapStore } from '../stores/mapStore';
 import { Location, Event } from '../types';
 import { cn, debounce } from '../utils';
 import { LocationService } from '../services/locationService';
-import { EventService } from '../services/eventService';
 
 interface SearchFiltersProps {
   locations: Location[];
@@ -52,6 +51,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   }, [localSearchQuery, debouncedSearch]);
 
   // Server-backed search when query length >= 2; otherwise use provided props
+  // Note: For events, we use local filtering to respect role-based filtering (organizers see only their events)
   useEffect(() => {
     let cancelled = false;
     const q = searchQuery.trim();
@@ -59,13 +59,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
     if (q.length >= 2) {
       (async () => {
         try {
-          const [locs, evts] = await Promise.all([
-            LocationService.searchLocations(q),
-            EventService.searchEvents(q),
-          ]);
+          // Only fetch locations from server; events are filtered locally to respect role permissions
+          const locs = await LocationService.searchLocations(q);
           if (!cancelled) {
             setFetchedLocations(locs);
-            setFetchedEvents(evts);
+            // Don't fetch events from server - use local filtering instead
+            setFetchedEvents(null);
           }
   } catch {
           // On error, fall back to local lists
@@ -89,6 +88,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
   useEffect(() => {
     const baseLocations = fetchedLocations ?? safeLocations;
     const baseEvents = fetchedEvents ?? safeEvents;
+    
+    console.log('🔍 SearchFilters: Starting filter process');
+    console.log('🔍 SearchFilters: safeEvents (from props):', safeEvents.length, safeEvents.map(e => e.title));
+    console.log('🔍 SearchFilters: fetchedEvents (from server search):', fetchedEvents?.length || 0);
+    console.log('🔍 SearchFilters: baseEvents (will use):', baseEvents.length);
+    
     let filteredLocations = [...baseLocations];
     let filteredEvents = [...baseEvents];
 

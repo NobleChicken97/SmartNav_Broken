@@ -178,6 +178,34 @@ const updateEvent = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Cancel event
+ * @route   PATCH /api/events/:id/cancel
+ * @access  Private (Event Owner or Admin)
+ */
+const cancelEvent = asyncHandler(async (req, res) => {
+  const event = await Event.findById(req.params.id)
+    .populate('locationId', 'name coordinates type')
+    .populate('createdBy', 'name email role');
+  
+  if (!event) {
+    return res.status(404).json({
+      success: false,
+      message: 'Event not found'
+    });
+  }
+  
+  // Update status to cancelled without running full validators
+  event.status = 'cancelled';
+  await event.save({ validateModifiedOnly: true });
+  
+  res.json({
+    success: true,
+    message: 'Event cancelled successfully',
+    data: { event }
+  });
+});
+
+/**
  * @desc    Delete event
  * @route   DELETE /api/events/:id
  * @access  Private (Event Owner or Admin)
@@ -324,6 +352,7 @@ export {
   getEvent,
   createEvent,
   updateEvent,
+  cancelEvent,
   deleteEvent,
   getRecommendedEvents,
   registerForEvent,
