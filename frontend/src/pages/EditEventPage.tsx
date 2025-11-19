@@ -84,7 +84,7 @@ const EditEventPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--background-cream)' }}>
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -92,9 +92,9 @@ const EditEventPage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)', fontFamily: 'Poppins, sans-serif' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+          <div className="card bg-red-50 border border-red-200">
             <div className="flex items-center">
               <svg
                 className="w-6 h-6 text-red-600 mr-3"
@@ -116,7 +116,7 @@ const EditEventPage = () => {
             </div>
             <button
               onClick={handleCancel}
-              className="mt-4 px-4 py-2 bg-red-100 text-red-800 rounded-md hover:bg-red-200"
+              className="btn btn-outline mt-4 !bg-red-100 !text-red-800 hover:!bg-red-200"
             >
               Back to Dashboard
             </button>
@@ -128,13 +128,13 @@ const EditEventPage = () => {
 
   if (!event) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)', fontFamily: 'Poppins, sans-serif' }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+          <div className="card bg-yellow-50 border border-yellow-200">
             <p className="text-yellow-800">Event not found</p>
             <button
               onClick={handleCancel}
-              className="mt-4 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-md hover:bg-yellow-200"
+              className="btn btn-outline mt-4 !bg-yellow-100 !text-yellow-800 hover:!bg-yellow-200"
             >
               Back to Dashboard
             </button>
@@ -145,13 +145,16 @@ const EditEventPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)', fontFamily: 'Poppins, sans-serif' }}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={handleCancel}
-            className="mb-4 text-sm font-medium text-gray-700 hover:text-blue-600 flex items-center transition-colors"
+            className="mb-4 text-base font-semibold text-gray-700 flex items-center transition-colors"
+            style={{ fontFamily: 'Poppins, sans-serif' }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary-green)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = ''}
           >
             <svg
               className="w-4 h-4 mr-2"
@@ -169,14 +172,14 @@ const EditEventPage = () => {
             Back to Dashboard
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900">Edit Event</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <h1 className="text-4xl font-bold main-heading">✏️ Edit Event</h1>
+          <p className="mt-2 text-base text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Update the event details below. All fields marked with * are required.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="card">
           <EventForm
             initialData={event}
             onSubmit={handleSubmit}

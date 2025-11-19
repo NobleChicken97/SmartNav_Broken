@@ -280,27 +280,27 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--background-cream)' }}>
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)', fontFamily: 'Poppins, sans-serif' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="mt-2 text-gray-600">
+              <h1 className="text-4xl font-bold main-heading">🛡️ Admin Dashboard</h1>
+              <p className="mt-2 text-base text-gray-700">
                 System administration and management
               </p>
             </div>
             <Link
               to="/map"
-              className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              className="btn btn-outline inline-flex items-center"
             >
               <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -332,9 +332,10 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab('overview')}
                 className={`${
                   activeTab === 'overview'
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base transition-colors`}
+                style={{ borderColor: activeTab === 'overview' ? 'var(--primary-green)' : undefined }}
               >
                 Overview
               </button>
@@ -342,9 +343,10 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab('users')}
                 className={`${
                   activeTab === 'users'
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base transition-colors`}
+                style={{ borderColor: activeTab === 'users' ? 'var(--primary-green)' : undefined }}
               >
                 Users ({totalUsers})
               </button>
@@ -352,9 +354,10 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab('events')}
                 className={`${
                   activeTab === 'events'
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base transition-colors`}
+                style={{ borderColor: activeTab === 'events' ? 'var(--primary-green)' : undefined }}
               >
                 Events ({totalEvents})
               </button>
@@ -362,9 +365,10 @@ const AdminDashboard = () => {
                 onClick={() => setActiveTab('locations')}
                 className={`${
                   activeTab === 'locations'
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'text-green-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+                } whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base transition-colors`}
+                style={{ borderColor: activeTab === 'locations' ? 'var(--primary-green)' : undefined }}
               >
                 Locations ({locations.length})
               </button>
@@ -376,10 +380,10 @@ const AdminDashboard = () => {
         {activeTab === 'overview' && (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="card">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 rounded-md p-3" style={{ backgroundColor: 'rgba(2, 132, 199, 0.15)' }}>
+                    <svg className="h-6 w-6" style={{ color: 'var(--secondary-blue)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                     </svg>
                   </div>
@@ -390,10 +394,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="card">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-green-100 rounded-md p-3">
-                    <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 rounded-md p-3" style={{ backgroundColor: 'rgba(22, 163, 74, 0.15)' }}>
+                    <svg className="h-6 w-6" style={{ color: 'var(--primary-green)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
@@ -404,10 +408,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="card">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-purple-100 rounded-md p-3">
-                    <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 rounded-md p-3" style={{ backgroundColor: 'rgba(22, 163, 74, 0.15)' }}>
+                    <svg className="h-6 w-6" style={{ color: 'var(--primary-green)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -418,10 +422,10 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="card">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0 bg-yellow-100 rounded-md p-3">
-                    <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="flex-shrink-0 rounded-md p-3" style={{ backgroundColor: 'rgba(2, 132, 199, 0.15)' }}>
+                    <svg className="h-6 w-6" style={{ color: 'var(--secondary-blue)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
@@ -434,8 +438,8 @@ const AdminDashboard = () => {
             </div>
 
             {/* Role Distribution */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">User Role Distribution</h3>
+            <div className="card">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>User Role Distribution</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="border border-gray-200 rounded-lg p-4">
                   <div className="flex items-center justify-between">
@@ -471,38 +475,38 @@ const AdminDashboard = () => {
 
         {/* Users Tab */}
         {activeTab === 'users' && (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-gray-200" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                <thead style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)' }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Role</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Joined</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {users.map(user => (
-                    <tr key={user._id} className="hover:bg-gray-50">
+                    <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center">
-                            <span className="text-gray-600 font-medium text-sm">
+                          <div className="flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, var(--primary-green), var(--secondary-blue))' }}>
+                            <span className="text-white font-semibold text-base">
                               {user.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                            <div className="text-base font-semibold text-gray-900">{user.name}</div>
                             {user._id === currentUser?._id && (
-                              <div className="text-xs text-blue-600">(You)</div>
+                              <div className="text-sm font-medium" style={{ color: 'var(--primary-green)' }}>(You)</div>
                             )}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{user.email}</div>
+                        <div className="text-base text-gray-700">{user.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {updatingRoleId === user._id ? (
@@ -515,7 +519,7 @@ const AdminDashboard = () => {
                             value={user.role}
                             onChange={(e) => handleChangeRole(user._id, e.target.value as 'student' | 'organizer' | 'admin')}
                             disabled={user._id === currentUser?._id || updatingRoleId !== null}
-                            className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${getRoleBadgeColor(user.role)} disabled:opacity-50 disabled:cursor-not-allowed`}
+                            className={`text-sm font-semibold rounded-full px-3 py-1.5 ${getRoleBadgeColor(user.role)} disabled:opacity-50 disabled:cursor-not-allowed border-0 cursor-pointer`}
                           >
                             <option value="student">Student</option>
                             <option value="organizer">Organizer</option>
@@ -523,14 +527,14 @@ const AdminDashboard = () => {
                           </select>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-600">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-base font-semibold">
                         <button
                           onClick={() => handleDeleteUser(user._id)}
                           disabled={user._id === currentUser?._id || deletingId === user._id}
-                          className="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors px-3 py-1.5 rounded-md hover:bg-red-50"
                         >
                           {deletingId === user._id ? 'Deleting...' : 'Delete'}
                         </button>
@@ -545,14 +549,14 @@ const AdminDashboard = () => {
 
         {/* Events Tab */}
         {activeTab === 'events' && (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="card overflow-hidden">
             {/* Events Header with Filters and Create Button */}
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">All Events</h2>
+                <h2 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>All Events</h2>
                 <Link
                   to="/events/create"
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="btn btn-primary inline-flex items-center"
                 >
                   <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -566,13 +570,17 @@ const AdminDashboard = () => {
                 {/* Upcoming Events */}
                 <button
                   onClick={() => setEventStatusFilter(eventStatusFilter === 'upcoming' ? 'all' : 'upcoming')}
-                  className={`bg-blue-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
-                    eventStatusFilter === 'upcoming' ? 'ring-2 ring-blue-500 shadow-md' : ''
+                  className={`rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'upcoming' ? 'ring-2 shadow-md' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    borderColor: eventStatusFilter === 'upcoming' ? 'var(--primary-green)' : undefined 
+                  }}
                 >
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-blue-100 rounded-md p-2">
-                      <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex-shrink-0 rounded-md p-2" style={{ backgroundColor: 'rgba(22, 163, 74, 0.2)' }}>
+                      <svg className="h-5 w-5" style={{ color: 'var(--primary-green)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
@@ -586,13 +594,17 @@ const AdminDashboard = () => {
                 {/* Ongoing Events */}
                 <button
                   onClick={() => setEventStatusFilter(eventStatusFilter === 'ongoing' ? 'all' : 'ongoing')}
-                  className={`bg-purple-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
-                    eventStatusFilter === 'ongoing' ? 'ring-2 ring-purple-500 shadow-md' : ''
+                  className={`rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'ongoing' ? 'ring-2 shadow-md' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: 'rgba(2, 132, 199, 0.1)',
+                    borderColor: eventStatusFilter === 'ongoing' ? 'var(--secondary-blue)' : undefined 
+                  }}
                 >
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-purple-100 rounded-md p-2">
-                      <svg className="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex-shrink-0 rounded-md p-2" style={{ backgroundColor: 'rgba(2, 132, 199, 0.2)' }}>
+                      <svg className="h-5 w-5" style={{ color: 'var(--secondary-blue)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -607,13 +619,17 @@ const AdminDashboard = () => {
                 {/* Completed Events */}
                 <button
                   onClick={() => setEventStatusFilter(eventStatusFilter === 'completed' ? 'all' : 'completed')}
-                  className={`bg-green-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
-                    eventStatusFilter === 'completed' ? 'ring-2 ring-green-500 shadow-md' : ''
+                  className={`rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'completed' ? 'ring-2 shadow-md' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: 'rgba(107, 114, 128, 0.1)',
+                    borderColor: eventStatusFilter === 'completed' ? '#6b7280' : undefined 
+                  }}
                 >
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-green-100 rounded-md p-2">
-                      <svg className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex-shrink-0 rounded-md p-2" style={{ backgroundColor: 'rgba(107, 114, 128, 0.2)' }}>
+                      <svg className="h-5 w-5" style={{ color: '#6b7280' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
@@ -627,13 +643,17 @@ const AdminDashboard = () => {
                 {/* Canceled Events */}
                 <button
                   onClick={() => setEventStatusFilter(eventStatusFilter === 'canceled' ? 'all' : 'canceled')}
-                  className={`bg-red-50 rounded-lg p-4 text-left transition-all hover:shadow-md ${
-                    eventStatusFilter === 'canceled' ? 'ring-2 ring-red-500 shadow-md' : ''
+                  className={`rounded-lg p-4 text-left transition-all hover:shadow-md ${
+                    eventStatusFilter === 'canceled' ? 'ring-2 shadow-md' : ''
                   }`}
+                  style={{ 
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                    borderColor: eventStatusFilter === 'canceled' ? '#ef4444' : undefined 
+                  }}
                 >
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-red-100 rounded-md p-2">
-                      <svg className="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex-shrink-0 rounded-md p-2" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
+                      <svg className="h-5 w-5" style={{ color: '#ef4444' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </div>
@@ -645,10 +665,10 @@ const AdminDashboard = () => {
                 </button>
 
                 {/* Total Registrations */}
-                <div className="bg-indigo-50 rounded-lg p-4">
+                <div className="rounded-lg p-4" style={{ backgroundColor: 'rgba(2, 132, 199, 0.1)' }}>
                   <div className="flex items-center">
-                    <div className="flex-shrink-0 bg-indigo-100 rounded-md p-2">
-                      <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex-shrink-0 rounded-md p-2" style={{ backgroundColor: 'rgba(2, 132, 199, 0.2)' }}>
+                      <svg className="h-5 w-5" style={{ color: 'var(--secondary-blue)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
                     </div>
@@ -711,41 +731,42 @@ const AdminDashboard = () => {
                     return (
                       <div key={event._id} className="p-6 hover:bg-gray-50">
                         <div className="flex items-start justify-between">
-                          <div className="flex-1">\n                            <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                            
-                            {/* Event Status Badge */}
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              event.status === 'published' ? 'bg-green-100 text-green-800' :
-                              event.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
-                              {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                            </span>
-                            
-                            {/* Time-based Status Badge - only show for non-cancelled events */}
-                            {event.status !== 'cancelled' && (
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
+                              
+                              {/* Event Status Badge */}
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
-                                status === 'ongoing' ? 'bg-purple-100 text-purple-800' :
-                                'bg-gray-100 text-gray-800'
+                                event.status === 'published' ? 'bg-green-100 text-green-800' :
+                                event.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
                               }`}>
-                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                                {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
                               </span>
-                            )}
-                            
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                              {event.category}
-                            </span>
+                              
+                              {/* Time-based Status Badge - only show for non-cancelled events */}
+                              {event.status !== 'cancelled' && (
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                  status === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                                  status === 'ongoing' ? 'bg-purple-100 text-purple-800' :
+                                  'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                                </span>
+                              )}
+                              
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                {event.category}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600 mb-2">{event.description}</p>
+                            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                              <span>📅 {date}</span>
+                              <span>🕐 {timeRange}</span>
+                              <span>👥 {event.attendees.length}/{event.capacity}</span>
+                              <span>👤 By: {event.organizer}</span>
+                            </div>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{event.description}</p>
-                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                            <span>📅 {date}</span>
-                            <span>🕐 {timeRange}</span>
-                            <span>👥 {event.attendees.length}/{event.capacity}</span>
-                            <span>👤 By: {event.organizer}</span>
-                          </div>
-                        </div>
                         
                         {/* Action Buttons */}
                         <div className="ml-6 flex items-center gap-2">
@@ -811,14 +832,14 @@ const AdminDashboard = () => {
 
         {/* Locations Tab */}
         {activeTab === 'locations' && (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="card overflow-hidden">
             {/* Locations Header */}
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">All Locations</h2>
+                <h2 className="text-2xl font-semibold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>All Locations</h2>
                 <button
                   onClick={handleCreateLocation}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  className="btn btn-primary inline-flex items-center"
                 >
                   <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -844,7 +865,8 @@ const AdminDashboard = () => {
                       placeholder="Search locations by name..."
                       value={locationSearchQuery}
                       onChange={(e) => setLocationSearchQuery(e.target.value)}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      className="input text-base"
+                      style={{ paddingLeft: '2.5rem' }}
                     />
                     {locationSearchQuery && (
                       <button
@@ -864,7 +886,7 @@ const AdminDashboard = () => {
                   <select
                     value={locationTypeFilter}
                     onChange={(e) => setLocationTypeFilter(e.target.value as any)}
-                    className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white"
+                    className="input text-base"
                   >
                     <option value="all">All Types</option>
                     <option value="hostel">🏠 Hostel</option>
@@ -986,7 +1008,7 @@ const AdminDashboard = () => {
                 return (
                   <>
                     {/* Results Count */}
-                    <div className="mb-4 text-sm text-gray-600">
+                    <div className="mb-6 text-base font-medium text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Showing {filteredLocations.length} of {locations.length} location{locations.length !== 1 ? 's' : ''}
                     </div>
 
@@ -1002,15 +1024,15 @@ const AdminDashboard = () => {
                     const typeEmoji = typeEmojiMap[location.type] || '📍';
                     
                     return (
-                      <div key={location._id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <div className="p-5">
+                      <div key={location._id} className="card transition-all hover:scale-105">
+                        <div className="p-6">
                           {/* Header */}
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-2xl">{typeEmoji}</span>
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <span className="text-3xl">{typeEmoji}</span>
                               <div>
-                                <h3 className="text-lg font-semibold text-gray-900">{location.name}</h3>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+                                <h3 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>{location.name}</h3>
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold capitalize" style={{ backgroundColor: 'rgba(22, 163, 74, 0.1)', color: 'var(--primary-green)' }}>
                                   {location.type}
                                 </span>
                               </div>
@@ -1019,25 +1041,25 @@ const AdminDashboard = () => {
 
                           {/* Description */}
                           {location.description && (
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                            <p className="text-base text-gray-700 mb-4 line-clamp-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
                               {location.description}
                             </p>
                           )}
 
                           {/* Coordinates */}
                           {location.coordinates && (
-                            <div className="mb-4 p-2 bg-gray-50 rounded text-xs text-gray-600">
-                              <div className="font-mono">
+                            <div className="mb-5 p-3 rounded-lg text-sm text-gray-700" style={{ backgroundColor: 'var(--background-cream)' }}>
+                              <div className="font-mono font-medium">
                                 📍 {location.coordinates.lat.toFixed(6)}, {location.coordinates.lng.toFixed(6)}
                               </div>
                             </div>
                           )}
 
                           {/* Actions */}
-                          <div className="flex gap-2">
+                          <div className="flex gap-3">
                             <button
                               onClick={() => handleEditLocation(location)}
-                              className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                              className="flex-1 btn btn-outline inline-flex justify-center items-center"
                             >
                               <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -1047,7 +1069,7 @@ const AdminDashboard = () => {
                             <button
                               onClick={() => handleDeleteLocation(location._id)}
                               disabled={deletingId === location._id}
-                              className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="inline-flex items-center px-4 py-2.5 border border-red-300 shadow-sm text-base font-semibold rounded-lg text-red-700 bg-white hover:bg-red-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {deletingId === location._id ? (
                                 <LoadingSpinner size="sm" />

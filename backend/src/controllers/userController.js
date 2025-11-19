@@ -31,11 +31,32 @@ const updateProfile = asyncHandler(async (req, res) => {
   
   const updateData = {};
   
-  if (name) updateData.name = name;
+  if (name) {
+    // Validate name length
+    if (name.trim().length < 2 || name.trim().length > 50) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be between 2 and 50 characters'
+      });
+    }
+    updateData.name = name.trim();
+  }
   if (interests !== undefined) updateData.interests = interests;
   
   const userId = req.user.uid || req.user._id;
   const user = await updateUserRepo(userId, updateData);
+  
+  // Update Firebase Auth display name as well
+  if (name) {
+    try {
+      const auth = getFirebaseAuth();
+      await auth.updateUser(userId, {
+        displayName: name.trim()
+      });
+    } catch (error) {
+      console.warn('Failed to update Firebase Auth display name:', error.message);
+    }
+  }
   
   res.json({
     success: true,

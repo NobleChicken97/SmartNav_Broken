@@ -69,10 +69,10 @@ export const ProfileDropdown = () => {
       {/* Avatar Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-10 w-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+        className="h-10 w-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         style={{
-          background: 'linear-gradient(135deg, #ec4899, #8b5cf6)',
-          boxShadow: isOpen ? '0 0 0 3px rgba(139, 92, 246, 0.3)' : 'none'
+          background: 'linear-gradient(135deg, var(--primary-green), var(--secondary-blue))',
+          boxShadow: isOpen ? '0 0 0 3px rgba(22, 163, 74, 0.3)' : 'none'
         }}
         aria-label="User menu"
         aria-expanded={isOpen}
@@ -108,6 +108,18 @@ export const ProfileDropdown = () => {
 
           {/* Menu Items */}
           <div className="py-1">
+            {/* Settings */}
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                navigate('/settings');
+              }}
+              className="w-full flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+            >
+              <span className="mr-3">⚙️</span>
+              Settings
+            </button>
+
             {/* Logout */}
             <button
               onClick={handleLogout}

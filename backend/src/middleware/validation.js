@@ -89,7 +89,8 @@ const validateLocation = [
   
   body('buildingId')
     .optional()
-    .isMongoId()
+    .isString()
+    .isLength({ min: 1, max: 100 })
     .withMessage('Building ID must be a valid ID'),
   
   body('floor')
@@ -128,7 +129,8 @@ const validateEvent = [
     .withMessage('Category must be one of: academic, cultural, sports, workshop, seminar, conference, social, other'),
   
   body('locationId')
-    .isMongoId()
+    .isString()
+    .isLength({ min: 1, max: 100 })
     .withMessage('Location ID must be a valid ID'),
   
   body('dateTime')
@@ -254,7 +256,9 @@ const validateEventQuery = [
   
   query('locationId')
     .optional()
-    .isMongoId()
+    .isString()
+    .trim()
+    .isLength({ min: 1, max: 100 })
     .withMessage('Location ID must be a valid ID'),
   
   handleValidationErrors

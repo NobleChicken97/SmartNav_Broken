@@ -12,7 +12,9 @@ import { Toaster } from 'react-hot-toast';
 // Lazy load pages for better initial load performance
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const MapPage = lazy(() => import('./pages/MapPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const OrganizerDashboard = lazy(() => import('./pages/OrganizerDashboard'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 const CreateEventPage = lazy(() => import('./pages/CreateEventPage'));
@@ -69,6 +71,14 @@ function App() {
                   </RouteErrorBoundary>
                 } 
               />
+              <Route 
+                path="/forgot-password" 
+                element={
+                  <RouteErrorBoundary routeName="Forgot Password">
+                    <ForgotPasswordPage />
+                  </RouteErrorBoundary>
+                } 
+              />
               
               {/* Protected Routes */}
               <Route
@@ -88,6 +98,17 @@ function App() {
                   <RouteErrorBoundary routeName="Map">
                     <PrivateRoute>
                       <MapPage />
+                    </PrivateRoute>
+                  </RouteErrorBoundary>
+                }
+              />
+
+              <Route
+                path="/settings"
+                element={
+                  <RouteErrorBoundary routeName="Settings">
+                    <PrivateRoute>
+                      <SettingsPage />
                     </PrivateRoute>
                   </RouteErrorBoundary>
                 }

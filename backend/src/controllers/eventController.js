@@ -67,6 +67,25 @@ const getEvents = asyncHandler(async (req, res) => {
     });
   }
   
+  // Filter out draft and cancelled events for non-authenticated users or students
+  // Admins and organizers see all their own events via /my-events endpoint
+  const userId = req.user?.uid || req.user?._id;
+  const isAdmin = req.user?.role === 'admin';
+  
+  events = events.filter(event => {
+    // Admins see everything
+    if (isAdmin) return true;
+    
+    // Show published events to everyone
+    if (event.status === 'published') return true;
+    
+    // Show draft/cancelled events only to their creator
+    if (userId && event.createdBy === userId) return true;
+    
+    // Hide draft/cancelled events from others
+    return false;
+  });
+  
   res.json({
     success: true,
     data: {

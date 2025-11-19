@@ -36,16 +36,17 @@ const CreateEventPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)' }}>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={handleCancel}
-            className="mb-4 text-sm font-medium text-gray-700 hover:text-blue-600 flex items-center transition-colors"
+            className="mb-6 text-base font-semibold text-gray-700 hover:text-green-600 flex items-center transition-colors"
+            style={{ fontFamily: 'Poppins, sans-serif' }}
           >
             <svg
-              className="w-4 h-4 mr-2"
+              className="w-5 h-5 mr-2"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -60,14 +61,14 @@ const CreateEventPage = () => {
             Back to Dashboard
           </button>
 
-          <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <h1 className="text-4xl font-bold main-heading">Create New Event</h1>
+          <p className="mt-3 text-base text-gray-700" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Fill out the form below to create a new event. All fields marked with * are required.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="card">
           <EventForm onSubmit={handleSubmit} onCancel={handleCancel} isEdit={false} />
         </div>
       </div>

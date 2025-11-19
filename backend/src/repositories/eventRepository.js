@@ -370,8 +370,9 @@ export const unregisterUserFromEvent = async (eventId, userId) => {
  * @async
  * @param {Object} options - Query options
  * @param {string} options.category - Filter by category
- * @param {string} options.locationId - Filter by location
- * @param {string} options.createdBy - Filter by creator
+ * @param {string} options.locationId - Filter by location ID
+ * @param {string} options.createdBy - Filter by creator user ID
+ * @param {string} options.status - Filter by status (draft, published, cancelled)
  * @param {boolean} options.upcomingOnly - Show only future events
  * @param {number} options.limit - Maximum number of results
  * @param {boolean} options.populateLocation - Whether to populate location data
@@ -392,6 +393,10 @@ export const listEvents = async (options = {}) => {
 
     if (options.createdBy) {
       query = query.where('createdBy', '==', options.createdBy);
+    }
+
+    if (options.status) {
+      query = query.where('status', '==', options.status);
     }
 
     if (options.upcomingOnly) {

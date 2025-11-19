@@ -137,21 +137,21 @@ const OrganizerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen py-8" style={{ backgroundColor: 'var(--background-cream)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Organizer Dashboard</h1>
-              <p className="mt-2 text-gray-600">
+              <h1 className="text-4xl font-bold main-heading">Organizer Dashboard</h1>
+              <p className="mt-3 text-gray-700 text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 Welcome back, {user?.name}! Manage your events here.
               </p>
             </div>
             <div className="flex gap-3">
               <Link
                 to="/map"
-                className="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                className="btn btn-outline"
               >
                 <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -160,7 +160,7 @@ const OrganizerDashboard = () => {
               </Link>
               <Link
                 to="/events/create"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                className="btn btn-primary"
               >
                 <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -176,13 +176,13 @@ const OrganizerDashboard = () => {
           {/* Upcoming Events */}
           <button
             onClick={() => setActiveFilter('upcoming')}
-            className={`bg-white rounded-lg shadow-md p-6 text-left transition-all hover:shadow-lg ${
-              activeFilter === 'upcoming' ? 'ring-2 ring-blue-500 shadow-lg' : ''
+            className={`card !p-6 text-left ${
+              activeFilter === 'upcoming' ? 'ring-2 ring-green-500 shadow-lg' : ''
             }`}
           >
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-blue-100 rounded-md p-3">
-                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex-shrink-0 bg-green-100 rounded-md p-3">
+                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -196,13 +196,13 @@ const OrganizerDashboard = () => {
           {/* Ongoing Events */}
           <button
             onClick={() => setActiveFilter('ongoing')}
-            className={`bg-white rounded-lg shadow-md p-6 text-left transition-all hover:shadow-lg ${
-              activeFilter === 'ongoing' ? 'ring-2 ring-purple-500 shadow-lg' : ''
+            className={`card !p-6 text-left ${
+              activeFilter === 'ongoing' ? 'ring-2 ring-blue-500 shadow-lg' : ''
             }`}
           >
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-purple-100 rounded-md p-3">
-                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -215,10 +215,10 @@ const OrganizerDashboard = () => {
           </button>
 
           {/* Total Registrations - Not clickable, just a stat display */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="card !p-6">
             <div className="flex items-center">
-              <div className="flex-shrink-0 bg-indigo-100 rounded-md p-3">
-                <svg className="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <div className="flex-shrink-0 bg-gray-100 rounded-md p-3">
+                <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
@@ -232,8 +232,8 @@ const OrganizerDashboard = () => {
           {/* Completed Events */}
           <button
             onClick={() => setActiveFilter('completed')}
-            className={`bg-white rounded-lg shadow-md p-6 text-left transition-all hover:shadow-lg ${
-              activeFilter === 'completed' ? 'ring-2 ring-green-500 shadow-lg' : ''
+            className={`card !p-6 text-left ${
+              activeFilter === 'completed' ? 'ring-2 ring-gray-500 shadow-lg' : ''
             }`}
           >
             <div className="flex items-center">
@@ -252,8 +252,8 @@ const OrganizerDashboard = () => {
           {/* Canceled Events */}
           <button
             onClick={() => setActiveFilter('canceled')}
-            className={`bg-white rounded-lg shadow-md p-6 text-left transition-all hover:shadow-lg ${
-              activeFilter === 'canceled' ? 'ring-2 ring-red-500 shadow-lg' : ''
+            className={`card !p-6 text-left ${
+              activeFilter === 'canceled' ? 'ring-2 ring-gray-400 shadow-lg' : ''
             }`}
           >
             <div className="flex items-center">
@@ -285,9 +285,9 @@ const OrganizerDashboard = () => {
         )}
 
         {/* Events List */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">
+        <div className="card !p-0 overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-200" style={{ backgroundColor: 'var(--background-cream)' }}>
+            <h2 className="text-2xl font-bold text-gray-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
               {activeFilter === 'all' && 'All Events'}
               {activeFilter === 'upcoming' && 'Upcoming Events'}
               {activeFilter === 'ongoing' && 'Ongoing Events'}
@@ -320,7 +320,7 @@ const OrganizerDashboard = () => {
                 <div className="mt-6">
                   <Link
                     to="/events/create"
-                    className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="btn btn-primary"
                   >
                     <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

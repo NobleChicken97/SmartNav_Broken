@@ -12,7 +12,7 @@
 
 ## ✨ Features
 
-- 🗺️ **Interactive Campus Map** - Leaflet-based mapping with custom markers
+- 🗺️ **Interactive Campus Map** - Leaflet-based mapping with custom markers and event locations
 - 🎉 **Event Management** - Create, manage, and display campus events with start/end times
 - ⏰ **Real-Time Event Status** - Automatic detection of upcoming, ongoing, and completed events
 - 📊 **Smart Dashboards** - Role-specific dashboards with clickable statistics and filtering
@@ -23,6 +23,7 @@
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 - 🔒 **Secure API** - Firebase Authentication with ID token verification
 - ⚡ **Modern Tech Stack** - React 18, TypeScript, Node.js with ES Modules
+- 🎨 **Modern Design System** - Consistent brand colors, Poppins/Dancing Script fonts, cream backgrounds
 - 📚 **API Documentation** - Complete Swagger/OpenAPI documentation
 
 ## 🚀 Quick Start
@@ -74,10 +75,15 @@ The application will be available at:
 
 - **React 18** with TypeScript
 - **Vite** for fast development and building
-- **Tailwind CSS** for styling
+- **Tailwind CSS** for styling with custom design system
 - **Leaflet** for interactive maps
 - **Zustand** for state management
 - **Axios** for API communication
+- **Design System:**
+  - Primary Green: `#16a34a`
+  - Secondary Blue: `#0284c7`
+  - Background Cream: `#fefce8`
+  - Fonts: Poppins (body), Dancing Script (headings)
 
 ### Backend
 
@@ -145,7 +151,8 @@ SmartNavigator/
 - ✅ Responsive design for all devices
 - ✅ Docker containerization (simplified, no MongoDB)
 - ✅ Clean architecture (44% fewer dependencies)
-- ✅ **Polished UI** - Improved navbar visibility and map interface
+- ✅ **Modern Design System** - Consistent brand colors, custom fonts, improved typography
+- ✅ **Polished UI** - Light navbar gradient, cream backgrounds, green/blue accent colors
 
 ### 🚧 In Progress
 
@@ -219,7 +226,8 @@ docker-compose up -d       # Start with Docker
 - ✅ **Enhanced dashboards** - Clickable statistics with smart filtering
 - ✅ **Firestore Repositories** - Clean data access layer for all collections
 - ✅ **Error Display Fix** - Fixed React Strict Mode error clearing issue
-- ✅ **UI Polish** - Removed map control buttons, improved navbar visibility
+- ✅ **Design System Overhaul** - Comprehensive redesign with brand colors and custom fonts
+- ✅ **UI Consistency** - All pages updated with card components, improved typography
 - ✅ **Production Merge** - Firebase branch successfully merged to main
 
 ## 🔥 Firebase Setup

@@ -81,11 +81,7 @@ h1.hero-title,
 /* Navigation elements */
 .navbar,
 .header {
-  background: linear-gradient(
-    135deg,
-    var(--primary-green) 0%,
-    var(--secondary-blue) 100%
-  );
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .nav-link {
@@ -343,7 +339,7 @@ h1.hero-title,
   position: sticky;
   top: 0;
   backdrop-filter: blur(20px);
-  box-shadow: 0 2px 20px rgba(22, 163, 74, 0.1);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   z-index: 1100;
 }
@@ -351,7 +347,7 @@ h1.hero-title,
   position: relative;
   transition: all 0.3s ease;
   padding: 0.5rem 1rem;
-  color: #1f2937;
+  color: #1e293b;
   font-weight: 500;
 }
 .nav-link::after {

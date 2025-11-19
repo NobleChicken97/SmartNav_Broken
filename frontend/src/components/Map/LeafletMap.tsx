@@ -345,9 +345,9 @@ export const LeafletMap = memo<LeafletMapProps>(({
         const baseColor = typeColors[location.type] || '#dbeafe';
         const borderColor = borderColors[location.type] || '#1e40af';
         
-        // Add glow effect if location has events
+        // Add glow effect if location has events - bigger and more visible
         const boxShadow = hasEvents 
-          ? `0 0 0 3px rgba(16, 185, 129, 0.4), 0 3px 6px rgba(0, 0, 0, 0.3)` 
+          ? `0 0 0 5px rgba(16, 185, 129, 0.7), 0 0 20px 3px rgba(16, 185, 129, 0.6), 0 3px 6px rgba(0, 0, 0, 0.3)` 
           : '0 3px 6px rgba(0, 0, 0, 0.3)';
         
         // Create teardrop-shaped custom icon
@@ -363,7 +363,7 @@ export const LeafletMap = memo<LeafletMapProps>(({
               align-items: center; 
               justify-content: center; 
               box-shadow: ${boxShadow};
-              border: 3px solid ${borderColor};
+              border: 3px solid ${hasEvents ? '#10b981' : borderColor};
               cursor: pointer;
             ">
               <span style="

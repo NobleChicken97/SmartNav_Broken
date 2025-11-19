@@ -11,7 +11,28 @@ export interface UpdateUserData {
   role?: 'student' | 'organizer' | 'admin';
 }
 
+export interface UpdateProfileData {
+  name?: string;
+  interests?: string[];
+}
+
 export class UserService {
+  /**
+   * Get current user profile
+   */
+  static async getProfile(): Promise<User> {
+    const response = await apiClient.get<{ success: boolean; data: { user: User } }>('/users/profile');
+    return response.data.user;
+  }
+
+  /**
+   * Update current user profile
+   */
+  static async updateProfile(data: UpdateProfileData): Promise<User> {
+    const response = await apiClient.put<{ success: boolean; data: { user: User } }>('/users/profile', data);
+    return response.data.user;
+  }
+
   /**
    * Get all users (admin only)
    */

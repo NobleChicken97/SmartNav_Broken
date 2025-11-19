@@ -78,7 +78,15 @@ const MapPage: React.FC = () => {
         filteredLocations: filteredLocs.length,
         totalEvents: eventsResponse.length,
         activeEvents: activeEvents.length,
-        userRole: user?.role
+        userRole: user?.role,
+        eventsData: eventsResponse.map(e => ({
+          id: e._id,
+          title: e.title,
+          status: e.status,
+          dateTime: e.dateTime,
+          timeStatus: EventService.getEventStatus(e),
+          locationId: typeof e.locationId === 'object' ? e.locationId._id : e.locationId
+        }))
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -136,9 +144,11 @@ const MapPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg">
-                <span className="text-white font-bold text-lg">LOGO</span>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="SmartNav Logo" 
+                className="h-14 w-auto ml-4"
+              />
             </div>
             
             {user && (
@@ -274,7 +284,7 @@ const MapPage: React.FC = () => {
           <div className="lg:col-span-3">
             <LeafletMap
               locations={filteredLocations}
-              events={filteredEvents}
+              events={events}
               onLocationSelect={handleLocationSelect}
               onEventSelect={handleEventSelect}
               enableRouting={true}
