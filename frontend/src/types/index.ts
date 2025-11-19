@@ -23,10 +23,12 @@ export interface PaginationMeta {
 // User types
 export interface User {
   _id: string;
+  uid?: string; // Firebase UID (optional for backward compatibility)
   name: string;
   email: string;
   interests: string[];
   role: 'student' | 'organizer' | 'admin';
+  photoURL?: string | null;
   createdAt: string;
   updatedAt: string;
 }

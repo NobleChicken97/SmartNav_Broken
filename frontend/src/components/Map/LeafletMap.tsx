@@ -47,8 +47,8 @@ export const LeafletMap = memo<LeafletMapProps>(({
   const waypointMarkersRef = useRef<L.Marker[]>([]); // Waypoint markers reference
   
   // Existing state
-  const [mapStyle, setMapStyle] = useState<'default' | 'satellite' | 'dark' | 'terrain'>('default');
-  const [showEvents, setShowEvents] = useState(true);
+  // const [mapStyle, setMapStyle] = useState<'default' | 'satellite' | 'dark' | 'terrain'>('default');
+  const [showEvents] = useState(true);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   
@@ -60,11 +60,6 @@ export const LeafletMap = memo<LeafletMapProps>(({
   const handleLocationSelect = useCallback((location: Location) => {
     onLocationSelect?.(location);
   }, [onLocationSelect]);
-
-  // Memoized callback for event toggle
-  const handleEventToggle = useCallback(() => {
-    setShowEvents(prev => !prev);
-  }, []);
 
   const handleMapClick = useCallback((e: L.LeafletMouseEvent) => {
     if (!routingMode || !enableRouting || !mapInstanceRef.current) return;
@@ -570,18 +565,18 @@ export const LeafletMap = memo<LeafletMapProps>(({
     }
   }, [selectedLocation]);
 
-  // Change map style
+  // Change map style (unused for now, kept for future feature)
+  // Commented out to avoid unused variable warnings
+  /*
   const changeMapStyle = (style: 'default' | 'satellite' | 'dark' | 'terrain') => {
     if (!mapInstanceRef.current) return;
 
-    // Remove current tile layer
     mapInstanceRef.current.eachLayer((layer) => {
       if (layer instanceof L.TileLayer) {
         mapInstanceRef.current?.removeLayer(layer);
       }
     });
 
-    // Add new tile layer
     let tileConfig = MAP_CONFIG.tileLayer;
     if (style !== 'default') {
       tileConfig = MAP_CONFIG.alternativeTiles[style];
@@ -596,6 +591,7 @@ export const LeafletMap = memo<LeafletMapProps>(({
     tileLayer.addTo(mapInstanceRef.current);
     setMapStyle(style);
   };
+  */
 
   return (
     <div className={`relative ${className}`}>

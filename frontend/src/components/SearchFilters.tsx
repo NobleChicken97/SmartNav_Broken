@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo, memo } from 'react';
 import { Search, Filter, X, MapPin, Users } from 'lucide-react';
 import { useMapStore } from '../stores/mapStore';
 import { Location, Event } from '../types';

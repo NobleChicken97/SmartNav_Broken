@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { LocationService } from '../services/locationService';
@@ -15,6 +15,7 @@ const MapPage: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredLocations, setFilteredLocations] = useState<Location[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  // Note: filteredEvents is set by SearchFilters component
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
@@ -284,7 +285,7 @@ const MapPage: React.FC = () => {
           <div className="lg:col-span-3">
             <LeafletMap
               locations={filteredLocations}
-              events={events}
+              events={filteredEvents}
               onLocationSelect={handleLocationSelect}
               onEventSelect={handleEventSelect}
               enableRouting={true}

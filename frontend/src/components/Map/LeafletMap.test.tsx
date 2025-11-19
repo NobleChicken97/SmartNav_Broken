@@ -36,7 +36,7 @@ describe('LeafletMap Component', () => {
       _id: '1',
       name: 'Test Location 1',
       description: 'A test location',
-      type: 'poi',
+      type: 'hostel',
       coordinates: { lat: 40.7128, lng: -74.0060 },
       tags: ['test'],
       createdAt: new Date().toISOString(),

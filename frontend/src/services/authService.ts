@@ -2,12 +2,10 @@ import { apiClient } from './apiClient';
 import { User, LoginCredentials, RegisterData } from '../types';
 import { 
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
-  signInWithCustomToken,
-  type UserCredential
+  signInWithCustomToken
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
@@ -51,7 +49,7 @@ export class AuthService {
     } catch (error: unknown) {
       // Handle Firebase errors that might come from backend
       const errorCode = (error as { code?: string })?.code;
-      const errorMessage = error?.message || '';
+      const errorMessage = (error as Error)?.message || '';
       
       console.error('Registration error:', { errorCode, errorMessage, error });
       
@@ -91,7 +89,7 @@ export class AuthService {
     } catch (error: unknown) {
       // Handle Firebase Auth errors with proper error codes
       const errorCode = (error as { code?: string })?.code;
-      const errorMessage = error?.message || '';
+      const errorMessage = (error as Error)?.message || '';
       
       console.error('Login error:', { errorCode, errorMessage, error });
       
