@@ -6,7 +6,7 @@
 [![ES Modules](https://img.shields.io/badge/ES%20Modules-✓-green)](https://github.com/NobleChicken97/SmartNav)
 [![React](https://img.shields.io/badge/React-18-blue)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-ES%20Modules-green)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248)](https://www.mongodb.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28)](https://firebase.google.com/)
 
 > A comprehensive web application that helps students, faculty, and visitors navigate Thapar University campus with interactive maps, location search, and real-time information.
 
@@ -21,7 +21,7 @@
 - 🎯 **Categories** - Buildings, rooms, dining, recreation, events, and more
 - 👥 **Role-Based Access** - Student, Organizer, and Admin roles with proper permissions
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
-- 🔒 **Secure API** - JWT authentication with HTTP-only cookies
+- 🔒 **Secure API** - Firebase Authentication with ID token verification
 - ⚡ **Modern Tech Stack** - React 18, TypeScript, Node.js with ES Modules
 - 📚 **API Documentation** - Complete Swagger/OpenAPI documentation
 
@@ -29,7 +29,7 @@
 
 ### Prerequisites
 - Node.js 16+ 
-- MongoDB Atlas account (or local MongoDB)
+- Firebase project (free tier available)
 - Git
 
 ### Installation
@@ -57,7 +57,6 @@ The application will be available at:
 |---------|------------------|-------------|
 | **Frontend** | http://localhost:5173 | http://localhost:3000 |
 | **Backend API** | http://localhost:5000 | http://localhost:5000 |
-| **MongoDB** | mongodb://localhost:27017 | mongodb://localhost:27017 |
 
 **Note:** Use development mode (`npm run dev`) for hot-reload during coding, or Docker mode (`docker-compose up`) for production-like testing.
 
@@ -81,9 +80,8 @@ The application will be available at:
 ### Backend  
 - **Node.js** with ES Modules
 - **Express.js** web framework
-- **MongoDB** with Mongoose ODM
-- **JWT** for authentication
-- **bcryptjs** for password hashing
+- **Firebase** (Firestore + Authentication)
+- **Firebase Admin SDK** for server-side operations
 - **Multer** for file uploads
 
 ### DevOps & Quality
@@ -101,7 +99,7 @@ SmartNavigator/
 ├── 📁 backend/                 # Node.js + Express API
 │   ├── src/
 │   │   ├── controllers/        # Route handlers
-│   │   ├── models/            # MongoDB schemas  
+│   │   ├── repositories/       # Firestore data access  
 │   │   ├── routes/            # API routes
 │   │   ├── middleware/        # Custom middleware
 │   │   └── utils/             # Helper functions
@@ -124,22 +122,23 @@ SmartNavigator/
 
 ## 🎯 Current Status
 
-**Project Grade:** A+ (96/100)  
-**Last Updated:** November 6, 2025
+**Project Status:** Production Ready ✅  
+**Architecture:** Firebase (Firestore + Authentication)  
+**Last Updated:** November 17, 2025
 
 ### ✅ Completed Features
+- ✅ **Firebase Migration Complete** - Full MongoDB to Firebase Firestore migration
+- ✅ **Firebase Authentication** - Secure client-side password handling
 - ✅ Full ES Modules conversion (Backend + Frontend)
 - ✅ Interactive Leaflet maps with campus locations
-- ✅ User authentication with JWT
-- ✅ Location CRUD operations
+- ✅ Location CRUD operations with Firestore
 - ✅ **Event end time tracking with time ranges**
 - ✅ **Real-time event status detection (Upcoming/Ongoing/Completed)**
 - ✅ **Smart dashboards with clickable statistics**
 - ✅ Role-based access control (Student, Organizer, Admin)
 - ✅ Responsive design for all devices
-- ✅ Docker containerization
-- ✅ CI/CD pipeline with GitHub Actions
-- ✅ Comprehensive API documentation
+- ✅ Docker containerization (simplified, no MongoDB)
+- ✅ Clean architecture (44% fewer dependencies)
 
 ### 🚧 In Progress  
 - 🔄 Enhanced test coverage
@@ -181,30 +180,43 @@ docker-compose up -d       # Start with Docker
 
 ## 🎓 Project Status
 
-**Current Version:** 2.0.0 - Production Ready ✅
+**Current Version:** 2.0.0 - Production Ready ✅  
+**Architecture:** Firebase-based (Firestore + Authentication)
 
 ### What's Working
 - ✅ Interactive campus map with Leaflet
 - ✅ Event markers with visual distinction (🎉 markers)
 - ✅ Location search and filtering
 - ✅ Role-based access control (Student, Organizer, Admin)
-- ✅ JWT authentication with HTTP-only cookies
-- ✅ Complete API with Swagger documentation
-- ✅ Docker deployment ready
+- ✅ **Firebase Authentication** - Secure client-side password validation
+- ✅ **Firestore Database** - All data in Firebase (users, locations, events)
+- ✅ Complete API with Firebase ID token verification
+- ✅ Docker deployment ready (no MongoDB required)
 - ✅ Type-safe TypeScript codebase
 
 ### Recent Updates (November 2025)
-- ✅ **Event end time tracking** - Events now have start and end times with validation
-- ✅ **Real-time event status** - Automatic detection of upcoming, ongoing, and completed events
-- ✅ **Enhanced dashboards** - Clickable statistics cards with smart filtering
-- ✅ **Event time ranges** - Display events with time ranges (e.g., "2:00 PM - 5:00 PM")
-- ✅ **Ongoing events monitoring** - Track and display currently active events
-- ✅ **Improved event management** - Dedicated cancel endpoint with proper state management
-- ✅ Implemented event markers on map with enhanced styling
-- ✅ Updated Swagger documentation with organizer role
-- ✅ Improved TypeScript type safety across all error handlers
-- ✅ Simplified architecture (removed NGINX, single rate limiter)
-- ✅ Cleaned up deprecated files and documentation
+- ✅ **Complete Firebase Migration** - Removed all MongoDB/JWT dependencies
+- ✅ **Security Enhanced** - Passwords never sent to backend (Firebase handles client-side)
+- ✅ **Simplified Auth Flow** - Reduced login steps from 5 to 2
+- ✅ **Dependency Optimization** - Reduced packages by 44% (47→26)
+- ✅ **Clean Architecture** - Removed 13 redundant files, 21 npm packages
+- ✅ **Updated Documentation** - Firebase-focused guides (QUICK_START_FIREBASE.md)
+- ✅ **Event end time tracking** - Events with start and end times
+- ✅ **Real-time event status** - Automatic detection of upcoming/ongoing/completed events
+- ✅ **Enhanced dashboards** - Clickable statistics with smart filtering
+- ✅ **Firestore Repositories** - Clean data access layer for all collections
+
+## 🔥 Firebase Setup
+
+This project uses Firebase for authentication and database. See **[QUICK_START_FIREBASE.md](./QUICK_START_FIREBASE.md)** for detailed setup instructions.
+
+**Quick Setup:**
+1. Create Firebase project at https://console.firebase.google.com
+2. Enable Authentication (Email/Password + Google)
+3. Enable Firestore Database
+4. Get service account credentials for backend
+5. Get web app credentials for frontend
+6. Configure `.env` files (see `.env.example`)
 
 ## 🤝 Contributing
 

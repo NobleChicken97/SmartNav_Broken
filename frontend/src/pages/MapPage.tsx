@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { LocationService } from '../services/locationService';
@@ -23,30 +23,12 @@ const MapPage: React.FC = () => {
 
   useEffect(() => {
     loadInitialData();
-  }, [user?.role]); // Reload when user role changes
+  }, []); // Only load once on mount
 
-  // Reload data when component mounts or becomes visible again
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        console.log('🔄 MapPage: Page visible again, reloading data...');
-        loadInitialData();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [user?.role]);
-
-  const loadInitialData = async () => {
+  const loadInitialData = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-
-      console.log('🗺️ MapPage: Loading data for user role:', user?.role);
 
       // For organizers, show only their own events
       // For students/admins, show all upcoming events
@@ -54,62 +36,73 @@ const MapPage: React.FC = () => {
         ? EventService.getMyEvents()
         : EventService.getUpcomingEvents(50);
 
-      console.log('🗺️ MapPage: Using', user?.role === 'organizer' ? 'getMyEvents()' : 'getUpcomingEvents()');
-
       const [locationsResponse, eventsResponse] = await Promise.all([
         LocationService.getLocations({ limit: 100 }),
         eventsPromise,
       ]);
 
-      console.log('🗺️ MapPage: Loaded', eventsResponse.length, 'events');
-      console.log('🗺️ MapPage: Event titles:', eventsResponse.map(e => e.title));
-      console.log('🗺️ MapPage: Event creators:', eventsResponse.map(e => 
-        typeof e.createdBy === 'object' ? e.createdBy?.name : e.createdBy
-      ));
+      // Filter events to only show upcoming and ongoing events (hide completed/canceled)
+      // Use computed status based on time, not the status field (draft/published/cancelled)
+      const activeEvents = eventsResponse.filter(event => {
+        // Exclude cancelled events
+        if (event.status === 'cancelled') return false;
+        
+        // Check time-based status
+        const timeStatus = EventService.getEventStatus(event);
+        return timeStatus === 'upcoming' || timeStatus === 'ongoing';
+      });
 
-      // For organizers, filter locations to only show those with their events
+      // For organizers, filter locations to only show those with their active events
       let filteredLocs = locationsResponse.locations;
       if (user?.role === 'organizer') {
-        // Get unique location IDs from the organizer's events
+        // Get unique location IDs from the organizer's active events
         const eventLocationIds = new Set(
-          eventsResponse
+          activeEvents
             .map(event => typeof event.locationId === 'object' ? event.locationId._id : event.locationId)
             .filter(Boolean)
         );
         
-        // Only show locations that have organizer's events
+        // Only show locations that have organizer's active events
         filteredLocs = locationsResponse.locations.filter(loc => 
           eventLocationIds.has(loc._id)
         );
-        
-        console.log('🗺️ MapPage: Organizer mode - filtered to', filteredLocs.length, 'locations with events');
       }
 
       setLocations(filteredLocs);
-      setEvents(eventsResponse);
+      setEvents(activeEvents);
       setFilteredLocations(filteredLocs);
-      setFilteredEvents(eventsResponse);
+      setFilteredEvents(activeEvents);
       
-      console.log('✅ MapPage: State updated with filtered events');
+      console.log('MapPage loaded:', {
+        totalLocations: locationsResponse.locations.length,
+        filteredLocations: filteredLocs.length,
+        totalEvents: eventsResponse.length,
+        activeEvents: activeEvents.length,
+        userRole: user?.role
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       console.error('Error loading initial data:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user?.role]); // Only recreate if user role changes
 
-  const handleLocationSelect = (location: Location) => {
+  const handleLocationSelect = useCallback((location: Location) => {
     setSelectedLocation(location);
     // Clear event selection when location is selected
     setSelectedEvent(null);
-  };
+  }, []);
 
-  const handleEventSelect = (event: Event) => {
+  const handleEventSelect = useCallback((event: Event) => {
     setSelectedEvent(event);
     // Clear location selection when event is selected
     setSelectedLocation(null);
-  };
+  }, []);
+
+  const handleToggleRouting = useCallback(() => {
+    setRoutingMode(prev => !prev);
+  }, []);
 
   if (isLoading) {
     return (
@@ -170,7 +163,7 @@ const MapPage: React.FC = () => {
                   </Link>
                 )}
                 
-                <span className="text-sm nav-link hidden sm:block">
+                <span className="text-sm nav-link hidden sm:block px-3 py-1.5 border-2 border-gray-300 rounded-lg bg-white/50">
                   Welcome, {user.name}
                 </span>
                 
@@ -194,7 +187,7 @@ const MapPage: React.FC = () => {
               onEventFilter={setFilteredEvents}
               className="sticky top-6"
               routingMode={routingMode}
-              onToggleRouting={() => setRoutingMode(!routingMode)}
+              onToggleRouting={handleToggleRouting}
             />
 
             {/* Selected Item Details */}

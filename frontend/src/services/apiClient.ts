@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { auth } from '../config/firebase';
 
 // Prefer same-origin Vite proxy to ensure cookies are sent; fall back to backend URL if provided
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
@@ -22,7 +23,18 @@ class ApiClient {
   private setupInterceptors(): void {
     // Request interceptor
     this.client.interceptors.request.use(
-      (config) => {
+      async (config) => {
+        // Add Firebase ID token to Authorization header
+        const user = auth.currentUser;
+        if (user) {
+          try {
+            const idToken = await user.getIdToken();
+            config.headers.Authorization = `Bearer ${idToken}`;
+          } catch (error) {
+            console.error('[API] Failed to get ID token:', error);
+          }
+        }
+
         // Add CSRF token if available
         const csrfToken = this.getCSRFToken();
         if (csrfToken) {
@@ -105,6 +117,14 @@ class ApiClient {
     if (axios.isAxiosError(error)) {
       const data = error.response?.data as unknown;
       if (isObject(data)) {
+        // Check for detailed validation errors first
+        if (Array.isArray(data.errors) && data.errors.length > 0) {
+          const firstError = data.errors[0];
+          if (isObject(firstError) && typeof firstError.message === 'string') {
+            return new Error(firstError.message);
+          }
+        }
+        // Then check for general message
         const message = typeof data.message === 'string' ? data.message : typeof data.error === 'string' ? data.error : undefined;
         if (message) return new Error(message);
       }

@@ -13,13 +13,13 @@ import express from 'express';
 const router = express.Router();
 import {
   register,
-  login,
   logout,
   getMe,
-  getCSRFToken
+  getCSRFToken,
+  googleAuth
 } from '../controllers/authController.js';
-import { authenticate } from '../middleware/auth.js';
-import { validateRegister, validateLogin } from '../middleware/validation.js';
+import { authenticateFirebase } from '../middleware/firebaseAuth.js';
+import { validateRegister } from '../middleware/validation.js';
 
 /**
  * @swagger
@@ -174,45 +174,8 @@ import { validateRegister, validateLogin } from '../middleware/validation.js';
 // Public routes
 router.post('/register', validateRegister, register);
 
-/**
- * @swagger
- * /api/auth/login:
- *   post:
- *     summary: Authenticate user and receive JWT token
- *     tags: [Authentication]
- *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/LoginRequest'
- *           example:
- *             email: "john.doe@thapar.edu"
- *             password: "SecurePass123!"
- *     responses:
- *       200:
- *         description: Login successful
- *         headers:
- *           Set-Cookie:
- *             description: HttpOnly JWT token cookie
- *             schema:
- *               type: string
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
- *       400:
- *         description: Invalid credentials
- *       429:
- *         description: Rate limit exceeded
- *       500:
- *         description: Internal server error
- */
-router.post('/login', validateLogin, login);
-
 // Private routes - require authentication
-router.use(authenticate);
+router.use(authenticateFirebase);
 
 /**
  * @swagger
@@ -241,7 +204,7 @@ router.use(authenticate);
  *       500:
  *         description: Internal server error
  */
-router.post('/logout', logout);
+router.post('/logout', authenticateFirebase, logout);
 
 /**
  * @swagger
@@ -277,7 +240,7 @@ router.post('/logout', logout);
  *       500:
  *         description: Internal server error
  */
-router.get('/me', getMe);
+router.get('/me', authenticateFirebase, getMe);
 
 /**
  * @swagger
@@ -309,6 +272,53 @@ router.get('/me', getMe);
  *       500:
  *         description: Internal server error
  */
-router.get('/csrf-token', getCSRFToken);
+router.get('/csrf-token', authenticateFirebase, getCSRFToken);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   post:
+ *     summary: Google OAuth Sign-In
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - idToken
+ *             properties:
+ *               idToken:
+ *                 type: string
+ *                 description: Google ID token from client-side Google Sign-In
+ *     responses:
+ *       200:
+ *         description: Google authentication successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     csrfToken:
+ *                       type: string
+ *       400:
+ *         description: Bad request - missing or invalid ID token
+ *       401:
+ *         description: Unauthorized - invalid Google token
+ *       500:
+ *         description: Internal server error
+ */
+router.post('/google', googleAuth);
 
 export default router;

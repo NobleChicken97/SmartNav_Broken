@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { RegisterData } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,14 +37,11 @@ const RegisterPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (isAuthenticated) {
+    // Only redirect if authenticated AND no error
+    if (isAuthenticated && !error) {
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, navigate]);
-
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
+  }, [isAuthenticated, error, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -73,12 +71,10 @@ const RegisterPage: React.FC = () => {
       return;
     }
 
-    try {
-      await register(formData);
-      // Navigation will be handled by useEffect
-    } catch (err) {
-      console.error('Registration failed:', err);
-    }
+    // Registration defaults to 'student' role on backend
+    // Organizer/Admin accounts created via backend scripts only
+    await register(formData);
+    // Navigation will be handled by useEffect after successful registration
   };
 
   const passwordsMatch = formData.password === confirmPassword;
@@ -312,6 +308,19 @@ const RegisterPage: React.FC = () => {
                 )}
               </button>
             </div>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google Sign-In */}
+            <GoogleSignInButton />
           </div>
 
           {/* Sign In Link */}

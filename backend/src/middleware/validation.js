@@ -52,21 +52,10 @@ const validateRegister = [
     .isLength({ min: 1, max: 50 })
     .withMessage('Each interest must be between 1 and 50 characters'),
   
-  handleValidationErrors
-];
-
-/**
- * User login validation
- */
-const validateLogin = [
-  body('email')
-    .isEmail()
-    .normalizeEmail()
-    .withMessage('Please provide a valid email'),
-  
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required'),
+  // Security: Reject any 'role' field in registration - force student role server-side
+  body('role')
+    .not().exists()
+    .withMessage('Role cannot be specified during registration'),
   
   handleValidationErrors
 ];
@@ -101,7 +90,7 @@ const validateLocation = [
   body('buildingId')
     .optional()
     .isMongoId()
-    .withMessage('Building ID must be a valid MongoDB ObjectId'),
+    .withMessage('Building ID must be a valid ID'),
   
   body('floor')
     .optional(),
@@ -140,7 +129,7 @@ const validateEvent = [
   
   body('locationId')
     .isMongoId()
-    .withMessage('Location ID must be a valid MongoDB ObjectId'),
+    .withMessage('Location ID must be a valid ID'),
   
   body('dateTime')
     .isISO8601()
@@ -266,25 +255,26 @@ const validateEventQuery = [
   query('locationId')
     .optional()
     .isMongoId()
-    .withMessage('Location ID must be a valid MongoDB ObjectId'),
+    .withMessage('Location ID must be a valid ID'),
   
   handleValidationErrors
 ];
 
 /**
- * MongoDB ObjectId parameter validation
+ * Generic ID parameter validation (Firestore document IDs)
  */
 const validateObjectId = [
   param('id')
-    .isMongoId()
-    .withMessage('ID must be a valid MongoDB ObjectId'),
+    .isString()
+    .trim()
+    .notEmpty()
+    .withMessage('ID must be a valid document ID'),
   
   handleValidationErrors
 ];
 
 export {
   validateRegister,
-  validateLogin,
   validateLocation,
   validateEvent,
   validateProfileUpdate,
