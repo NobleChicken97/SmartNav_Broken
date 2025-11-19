@@ -29,10 +29,16 @@ const initializeFirebaseAdmin = () => {
       );
     }
 
+    // Handle private key - convert \n to actual newlines if needed
+    let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    if (privateKey.includes('\\n')) {
+      privateKey = privateKey.replace(/\\n/g, '\n');
+    }
+
     const serviceAccount = {
       projectId: process.env.FIREBASE_PROJECT_ID,
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+      privateKey: privateKey
     };
 
     const app = initializeApp({
