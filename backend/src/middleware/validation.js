@@ -76,8 +76,8 @@ const validateLocation = [
     .withMessage('Description cannot exceed 500 characters'),
   
   body('type')
-    .isIn(['building', 'room', 'poi'])
-    .withMessage('Type must be one of: building, room, poi'),
+    .isIn(['hostel', 'class', 'faculty', 'entertainment', 'shop'])
+    .withMessage('Type must be one of: hostel, class, faculty, entertainment, shop'),
   
   body('coordinates.lat')
     .isFloat({ min: -90, max: 90 })
@@ -201,8 +201,8 @@ const validateLocationQuery = [
   
   query('type')
     .optional()
-    .isIn(['building', 'room', 'poi'])
-    .withMessage('Type must be one of: building, room, poi'),
+    .isIn(['hostel', 'class', 'faculty', 'entertainment', 'shop'])
+    .withMessage('Type must be one of: hostel, class, faculty, entertainment, shop'),
   
   query('north')
     .optional()

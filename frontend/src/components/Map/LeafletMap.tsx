@@ -326,28 +326,51 @@ export const LeafletMap = memo<LeafletMapProps>(({
         
         const hasEvents = locationEvents.length > 0;
         
-        // Create custom icon based on type
+        // Get type-specific emoji and color
         const emoji = MARKER_ICONS[location.type as keyof typeof MARKER_ICONS] || '📍';
-        const borderColor = hasEvents ? '#10b981' : '#2563eb'; // Green if has events, blue otherwise
-        const boxShadow = hasEvents 
-          ? '0 0 0 3px rgba(16, 185, 129, 0.3), 0 2px 6px rgba(0,0,0,0.3)' 
-          : '0 2px 6px rgba(0,0,0,0.3)';
+        const typeColors: Record<string, string> = {
+          'hostel': '#fef3c7',      // Light yellow
+          'class': '#dbeafe',       // Light blue
+          'faculty': '#e9d5ff',     // Light purple
+          'entertainment': '#fce7f3', // Light pink
+          'shop': '#fed7aa'         // Light orange
+        };
+        const borderColors: Record<string, string> = {
+          'hostel': '#15803d',      // Dark green
+          'class': '#1e40af',       // Dark blue
+          'faculty': '#6b21a8',     // Dark purple
+          'entertainment': '#be185d', // Dark pink
+          'shop': '#c2410c'         // Dark orange
+        };
+        const baseColor = typeColors[location.type] || '#dbeafe';
+        const borderColor = borderColors[location.type] || '#1e40af';
         
+        // Add glow effect if location has events
+        const boxShadow = hasEvents 
+          ? `0 0 0 3px rgba(16, 185, 129, 0.4), 0 3px 6px rgba(0, 0, 0, 0.3)` 
+          : '0 3px 6px rgba(0, 0, 0, 0.3)';
+        
+        // Create teardrop-shaped custom icon
         const customIcon = L.divIcon({
           html: `
             <div style="
-              background: white; 
-              border-radius: 50%; 
-              width: 35px; 
-              height: 35px; 
+              background: ${baseColor}; 
+              width: 32px; 
+              height: 32px; 
+              border-radius: 50% 50% 50% 0;
+              transform: rotate(-45deg);
               display: flex; 
               align-items: center; 
               justify-content: center; 
-              border: 3px solid ${borderColor}; 
-              font-size: 18px;
               box-shadow: ${boxShadow};
+              border: 3px solid ${borderColor};
               cursor: pointer;
-            ">${emoji}</div>
+            ">
+              <span style="
+                transform: rotate(45deg);
+                font-size: 16px;
+              ">${emoji}</span>
+            </div>
           `,
           iconSize: [35, 35],
           iconAnchor: [17.5, 17.5],
@@ -535,7 +558,7 @@ export const LeafletMap = memo<LeafletMapProps>(({
         eventMarkersRef.current.push(marker);
       });
     }
-  }, [filteredLocations, events, handleLocationSelect, onEventSelect, showEvents]);
+  }, [filteredLocations, events, handleLocationSelect, onEventSelect, showEvents, routingMode]);
 
   // Handle selected location
   useEffect(() => {

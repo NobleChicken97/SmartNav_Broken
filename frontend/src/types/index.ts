@@ -53,7 +53,7 @@ export interface Location {
   _id: string;
   name: string;
   description?: string;
-  type: 'building' | 'room' | 'poi';
+  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop';
   coordinates: Coordinates;
   buildingId?: string;
   floor?: number | string;
@@ -72,7 +72,7 @@ export interface Location {
 export interface LocationFormData {
   name: string;
   description?: string;
-  type: 'building' | 'room' | 'poi';
+  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop';
   coordinates: Coordinates;
   buildingId?: string;
   floor?: number | string;
@@ -92,7 +92,7 @@ export type UpdateLocationData = Partial<LocationFormData>;
 
 export interface LocationFilters {
   q?: string;
-  type?: 'building' | 'room' | 'poi';
+  type?: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop';
   north?: number;
   south?: number;
   east?: number;

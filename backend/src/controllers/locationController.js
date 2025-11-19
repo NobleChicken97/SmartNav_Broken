@@ -212,8 +212,8 @@ const importLocations = asyncHandler(async (req, res) => {
           }
           
           // Validate type
-          if (!['building', 'room', 'poi'].includes(row.type.toLowerCase())) {
-            errors.push(`Row ${index + 1}: Invalid type (must be building, room, or poi)`);
+          if (!['hostel', 'class', 'faculty', 'entertainment', 'shop'].includes(row.type.toLowerCase())) {
+            errors.push(`Row ${index + 1}: Invalid type (must be hostel, class, faculty, entertainment, or shop)`);
             return;
           }
           

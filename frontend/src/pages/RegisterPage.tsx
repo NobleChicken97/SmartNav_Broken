@@ -7,7 +7,7 @@ import { GoogleSignInButton } from '../components/GoogleSignInButton';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { register, isLoading, error, clearError, isAuthenticated } = useAuthStore();
+  const { register, isLoading, error, clearError, isAuthenticated, user } = useAuthStore();
 
   const [formData, setFormData] = useState<RegisterData>({
     name: '',
@@ -37,11 +37,12 @@ const RegisterPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Only redirect if authenticated AND no error
-    if (isAuthenticated && !error) {
+    // Only redirect if BOTH authenticated AND user data is loaded
+    // This prevents flash of register page while user data is being fetched
+    if (isAuthenticated && user && !isLoading) {
       navigate('/dashboard', { replace: true });
     }
-  }, [isAuthenticated, error, navigate]);
+  }, [isAuthenticated, user, isLoading, navigate]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

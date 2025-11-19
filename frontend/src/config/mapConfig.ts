@@ -44,12 +44,17 @@ export const CAMPUS_BOUNDS = {
 
 // Custom marker icons for different location types
 export const MARKER_ICONS = {
+  // New location types
+  hostel: '🏠',
+  class: '🎓',
+  faculty: '👨‍🏫',
+  entertainment: '🎭',
+  shop: '🛒',
+  // Legacy support for old types
   building: '🏫',
   room: '🚪',
   poi: '📍',
-  // Legacy support for other types
   academic: '🏫',
-  hostel: '🏠',
   cafeteria: '🍽️',
   library: '📚',
   sports: '⚽',
@@ -58,4 +63,17 @@ export const MARKER_ICONS = {
   parking: '🅿️',
   atm: '🏧',
   event: '🎉'
+};
+
+// Marker colors for different location types
+export const MARKER_COLORS = {
+  hostel: '#10b981',      // Green
+  class: '#3b82f6',       // Blue
+  faculty: '#8b5cf6',     // Purple
+  entertainment: '#ec4899', // Pink
+  shop: '#f97316',        // Orange
+  // Legacy colors
+  building: '#2563eb',
+  room: '#2563eb',
+  poi: '#2563eb'
 };

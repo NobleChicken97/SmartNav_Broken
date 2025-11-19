@@ -6,25 +6,37 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { EventService } from '../services/eventService';
+import { LocationService } from '../services/locationService';
 import { UserService } from '../services/user';
 import { useAuthStore } from '../stores/authStore';
-import { Event, User } from '../types';
+import { Event, User, Location } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
+import LocationEditor from '../components/LocationEditor';
 import { getRoleBadgeColor } from '../utils/permissions';
 
-type Tab = 'overview' | 'users' | 'events';
+type Tab = 'overview' | 'users' | 'events' | 'locations';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [users, setUsers] = useState<User[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
   const [selectedOrganizer, setSelectedOrganizer] = useState<string>('all'); // Filter by organizer
   const [eventStatusFilter, setEventStatusFilter] = useState<'all' | 'upcoming' | 'ongoing' | 'completed' | 'canceled'>('all'); // Filter by event status
+  
+  // Location editor state
+  const [isLocationEditorOpen, setIsLocationEditorOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null);
+  
+  // Location search and filter state
+  const [locationSearchQuery, setLocationSearchQuery] = useState('');
+  const [locationTypeFilter, setLocationTypeFilter] = useState<'all' | 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop'>('all');
+  
   const { user: currentUser } = useAuthStore();
 
   useEffect(() => {
@@ -35,9 +47,10 @@ const AdminDashboard = () => {
     try {
       setLoading(true);
       setError(null);
-      const [usersData, eventsData] = await Promise.all([
+      const [usersData, eventsData, locationsData] = await Promise.all([
         UserService.getAllUsers(),
-        EventService.getEvents({ limit: 100 })
+        EventService.getEvents({ limit: 100 }),
+        LocationService.getLocations({ limit: 1000 })
       ]);
       
       // Guard against unexpected response structure
@@ -54,10 +67,18 @@ const AdminDashboard = () => {
         console.warn('Unexpected events data structure:', eventsData);
         setEvents([]);
       }
+
+      if (locationsData && Array.isArray(locationsData.locations)) {
+        setLocations(locationsData.locations);
+      } else {
+        console.warn('Unexpected locations data structure:', locationsData);
+        setLocations([]);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       setUsers([]); // Reset to empty arrays on error
       setEvents([]);
+      setLocations([]);
       console.error('Failed to load admin data:', err);
     } finally {
       setLoading(false);
@@ -154,6 +175,67 @@ const AdminDashboard = () => {
 
   const handleEditEvent = (eventId: string) => {
     navigate(`/events/${eventId}/edit`);
+  };
+
+  // ==================== LOCATION CRUD HANDLERS ====================
+  
+  const handleCreateLocation = () => {
+    setEditingLocation(null);
+    setIsLocationEditorOpen(true);
+  };
+
+  const handleEditLocation = (location: Location) => {
+    setEditingLocation(location);
+    setIsLocationEditorOpen(true);
+  };
+
+  const handleSaveLocation = async (data: any) => {
+    try {
+      // Check for duplicate names (case-insensitive)
+      const normalizedName = data.name.trim().toLowerCase();
+      const isDuplicate = locations.some(loc => {
+        // Skip the current location when editing
+        if (editingLocation && loc._id === editingLocation._id) {
+          return false;
+        }
+        return loc.name.toLowerCase() === normalizedName;
+      });
+
+      if (isDuplicate) {
+        throw new Error(`A location with the name "${data.name}" already exists. Please choose a different name.`);
+      }
+
+      if (editingLocation) {
+        // Update existing location
+        const updated = await LocationService.updateLocation(editingLocation._id, data);
+        setLocations(locations.map(loc => loc._id === editingLocation._id ? updated : loc));
+      } else {
+        // Create new location
+        const created = await LocationService.createLocation(data);
+        setLocations([...locations, created]);
+      }
+      setIsLocationEditorOpen(false);
+      setEditingLocation(null);
+    } catch (err) {
+      throw err; // Let LocationEditor handle the error display
+    }
+  };
+
+  const handleDeleteLocation = async (locationId: string) => {
+    if (!confirm('Are you sure you want to delete this location? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setDeletingId(locationId);
+      await LocationService.deleteLocation(locationId);
+      setLocations(locations.filter(loc => loc._id !== locationId));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to delete location');
+      console.error('Failed to delete location:', err);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   // Calculate statistics
@@ -275,6 +357,16 @@ const AdminDashboard = () => {
                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
               >
                 Events ({totalEvents})
+              </button>
+              <button
+                onClick={() => setActiveTab('locations')}
+                className={`${
+                  activeTab === 'locations'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors`}
+              >
+                Locations ({locations.length})
               </button>
             </nav>
           </div>
@@ -611,15 +703,15 @@ const AdminDashboard = () => {
                   </p>
                 </div>
               ) : (
-                filteredEvents.map(event => {
-                  const { date, timeRange } = EventService.formatEventDateTime(event);
-                  const status = EventService.getEventStatus(event);
+                <>
+                  {filteredEvents.map(event => {
+                    const { date, timeRange } = EventService.formatEventDateTime(event);
+                    const status = EventService.getEventStatus(event);
 
-                  return (
-                    <div key={event._id} className="p-6 hover:bg-gray-50">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
+                    return (
+                      <div key={event._id} className="p-6 hover:bg-gray-50">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">\n                            <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
                             
                             {/* Event Status Badge */}
@@ -710,12 +802,288 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                   );
-                })
+                  })}
+                </>
               )}
             </div>
           </div>
         )}
+
+        {/* Locations Tab */}
+        {activeTab === 'locations' && (
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            {/* Locations Header */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">All Locations</h2>
+                <button
+                  onClick={handleCreateLocation}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Location
+                </button>
+              </div>
+            </div>
+
+            {/* Search and Filter Section */}
+            <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row gap-4">
+                {/* Search Input */}
+                <div className="flex-1">
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Search locations by name..."
+                      value={locationSearchQuery}
+                      onChange={(e) => setLocationSearchQuery(e.target.value)}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                    {locationSearchQuery && (
+                      <button
+                        onClick={() => setLocationSearchQuery('')}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      >
+                        <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Type Filter */}
+                <div className="sm:w-64">
+                  <select
+                    value={locationTypeFilter}
+                    onChange={(e) => setLocationTypeFilter(e.target.value as any)}
+                    className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white"
+                  >
+                    <option value="all">All Types</option>
+                    <option value="hostel">🏠 Hostel</option>
+                    <option value="class">🎓 Class</option>
+                    <option value="faculty">👨‍🏫 Faculty</option>
+                    <option value="entertainment">🎭 Entertainment</option>
+                    <option value="shop">🛒 Shop</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Active Filters Display */}
+              {(locationSearchQuery || locationTypeFilter !== 'all') && (
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Active filters:</span>
+                  {locationSearchQuery && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      Search: "{locationSearchQuery}"
+                      <button
+                        onClick={() => setLocationSearchQuery('')}
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-blue-200"
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                  )}
+                  {locationTypeFilter !== 'all' && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize">
+                      Type: {locationTypeFilter}
+                      <button
+                        onClick={() => setLocationTypeFilter('all')}
+                        className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-green-200"
+                      >
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </span>
+                  )}
+                  <button
+                    onClick={() => {
+                      setLocationSearchQuery('');
+                      setLocationTypeFilter('all');
+                    }}
+                    className="text-sm text-gray-600 hover:text-gray-900 underline"
+                  >
+                    Clear all
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Locations Grid */}
+            <div className="p-6">
+              {(() => {
+                // Filter locations based on search and type
+                const filteredLocations = locations.filter(location => {
+                  const matchesSearch = locationSearchQuery.trim() === '' || 
+                    location.name.toLowerCase().includes(locationSearchQuery.toLowerCase());
+                  const matchesType = locationTypeFilter === 'all' || location.type === locationTypeFilter;
+                  return matchesSearch && matchesType;
+                });
+
+                if (locations.length === 0) {
+                  return (
+                <div className="text-center py-12">
+                  <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-medium text-gray-900">No locations</h3>
+                  <p className="mt-1 text-sm text-gray-500">Get started by creating a new location.</p>
+                  <div className="mt-6">
+                    <button
+                      onClick={handleCreateLocation}
+                      className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                    >
+                      <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Add Location
+                    </button>
+                  </div>
+                </div>
+                  );
+                }
+
+                if (filteredLocations.length === 0) {
+                  return (
+                    <div className="text-center py-12">
+                      <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <h3 className="mt-2 text-sm font-medium text-gray-900">No locations found</h3>
+                      <p className="mt-1 text-sm text-gray-500">
+                        {locationSearchQuery || locationTypeFilter !== 'all' 
+                          ? 'Try adjusting your search or filters'
+                          : 'No locations match your criteria'}
+                      </p>
+                      {(locationSearchQuery || locationTypeFilter !== 'all') && (
+                        <div className="mt-6">
+                          <button
+                            onClick={() => {
+                              setLocationSearchQuery('');
+                              setLocationTypeFilter('all');
+                            }}
+                            className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                          >
+                            Clear filters
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <>
+                    {/* Results Count */}
+                    <div className="mb-4 text-sm text-gray-600">
+                      Showing {filteredLocations.length} of {locations.length} location{locations.length !== 1 ? 's' : ''}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredLocations.map(location => {
+                    const typeEmojiMap: Record<string, string> = {
+                      'hostel': '🏠',
+                      'class': '🎓',
+                      'faculty': '👨‍🏫',
+                      'entertainment': '🎭',
+                      'shop': '🛒'
+                    };
+                    const typeEmoji = typeEmojiMap[location.type] || '📍';
+                    
+                    return (
+                      <div key={location._id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <div className="p-5">
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl">{typeEmoji}</span>
+                              <div>
+                                <h3 className="text-lg font-semibold text-gray-900">{location.name}</h3>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+                                  {location.type}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Description */}
+                          {location.description && (
+                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                              {location.description}
+                            </p>
+                          )}
+
+                          {/* Coordinates */}
+                          {location.coordinates && (
+                            <div className="mb-4 p-2 bg-gray-50 rounded text-xs text-gray-600">
+                              <div className="font-mono">
+                                📍 {location.coordinates.lat.toFixed(6)}, {location.coordinates.lng.toFixed(6)}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Actions */}
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditLocation(location)}
+                              className="flex-1 inline-flex justify-center items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                            >
+                              <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteLocation(location._id)}
+                              disabled={deletingId === location._id}
+                              className="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {deletingId === location._id ? (
+                                <LoadingSpinner size="sm" />
+                              ) : (
+                                <>
+                                  <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  Delete
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Location Editor Modal */}
+      <LocationEditor
+        isOpen={isLocationEditorOpen}
+        onClose={() => {
+          setIsLocationEditorOpen(false);
+          setEditingLocation(null);
+        }}
+        onSave={handleSaveLocation}
+        location={editingLocation}
+      />
     </div>
   );
 };

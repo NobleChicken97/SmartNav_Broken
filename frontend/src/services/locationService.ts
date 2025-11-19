@@ -85,11 +85,13 @@ export class LocationService {
   }
 
   static async createLocation(data: CreateLocationData): Promise<Location> {
-    return apiClient.post<Location>('/locations', data);
+    const response = await apiClient.post<{ success: boolean; data: { location: Location } }>('/locations', data);
+    return response.data.location;
   }
 
   static async updateLocation(id: string, data: UpdateLocationData): Promise<Location> {
-    return apiClient.put<Location>(`/locations/${id}`, data);
+    const response = await apiClient.put<{ success: boolean; data: { location: Location } }>(`/locations/${id}`, data);
+    return response.data.location;
   }
 
   static async deleteLocation(id: string): Promise<void> {

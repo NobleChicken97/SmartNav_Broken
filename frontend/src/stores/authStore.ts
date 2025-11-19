@@ -65,8 +65,8 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       logger.log('🔐 Auth Store: Firebase sign-in successful');
       logger.log('🔐 Auth Store: onAuthStateChanged will handle user state update');
       
-      // Keep isLoading: true - onAuthStateChanged listener will set it to false
-      // This prevents premature redirect before user data is fetched
+      // Keep isLoading: true until onAuthStateChanged completes
+      // This prevents the login page from flashing before redirect
       
     } catch (error) {
       logger.error('🔐 Auth Store: Login failed:', error);

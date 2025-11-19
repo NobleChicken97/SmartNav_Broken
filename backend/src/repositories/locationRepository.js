@@ -16,7 +16,7 @@ const LOCATIONS_COLLECTION = 'locations';
  * @param {Object} locationData - Location data
  * @param {string} locationData.name - Location name
  * @param {string} locationData.description - Location description
- * @param {string} locationData.type - Location type (building, room, poi)
+ * @param {string} locationData.type - Location type (hostel, class, faculty, entertainment, shop)
  * @param {Object} locationData.coordinates - Coordinates {lat, lng}
  * @param {string} locationData.buildingId - Parent building ID (optional)
  * @param {*} locationData.floor - Floor number/name (optional)

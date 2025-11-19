@@ -23,8 +23,9 @@ const LoginPage: React.FC = () => {
   const from = state?.from?.pathname;
 
   useEffect(() => {
-    // Only redirect if authenticated AND user data is loaded AND not loading
-    if (isAuthenticated && user && !isLoading && !error) {
+    // Only redirect if BOTH authenticated AND user data is fully loaded
+    // This prevents flash of login page while user data is being fetched
+    if (isAuthenticated && user && !isLoading) {
       // Determine redirect path based on role
       let redirectPath = from;
       
@@ -41,7 +42,7 @@ const LoginPage: React.FC = () => {
       
       navigate(redirectPath, { replace: true });
     }
-  }, [isAuthenticated, user, isLoading, error, navigate, from, isAdmin, isOrganizer]);
+  }, [isAuthenticated, user, isLoading, navigate, from, isAdmin, isOrganizer]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
