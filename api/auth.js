@@ -15,7 +15,9 @@ import { asyncHandler } from './_lib/middleware/errorHandler.js';
 
 // CORS helper
 const setCors = (res) => {
-  const origin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+  let origin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+  // Clean up any whitespace or newlines that might have been added
+  origin = origin.trim();
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');

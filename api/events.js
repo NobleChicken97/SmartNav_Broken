@@ -21,7 +21,8 @@ import { requireOrganizerOrAdmin } from './_lib/middleware/rbac.js';
 import { asyncHandler } from './_lib/middleware/errorHandler.js';
 
 const setCors = (res) => {
-  const origin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+  let origin = process.env.CORS_ORIGIN || 'http://localhost:5173';
+  origin = origin.trim();
   res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
