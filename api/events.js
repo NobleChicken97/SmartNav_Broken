@@ -36,7 +36,9 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  const path = req.url.replace('/api/events', '') || '/';
+  // Strip query string from path
+  const urlWithoutQuery = req.url.split('?')[0];
+  const path = urlWithoutQuery.replace('/api/events', '') || '/';
   const segments = path.split('/').filter(Boolean);
 
   try {

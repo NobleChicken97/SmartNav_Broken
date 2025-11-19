@@ -32,8 +32,9 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Parse URL path
-  const path = req.url.replace('/api/auth', '');
+  // Parse URL path - strip query string first
+  const urlWithoutQuery = req.url.split('?')[0];
+  const path = urlWithoutQuery.replace('/api/auth', '');
 
   try {
     // POST /api/auth/register
