@@ -1,8 +1,7 @@
 {
   "version": 2,
   "name": "smartnav",
-  "buildCommand": "cd frontend && npm install --include=dev && npm run build",
-  "installCommand": "cd api && npm install && cd ../frontend && npm install --include=dev",
+  "buildCommand": "cd api && npm ci && cd ../frontend && npm ci && npm run build",
   "outputDirectory": "frontend/dist",
   "functions": {
     "api/**/*.js": {
