@@ -846,11 +846,6 @@ export const LeafletMap = memo<LeafletMapProps>(({
             mapRef.current?.focus();
           }
         }}
-        style={{ 
-          minHeight: '500px',
-          height: '100%',
-          background: '#f8fafc'
-        }}
       />
     </div>
   );
