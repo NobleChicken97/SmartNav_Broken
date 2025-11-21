@@ -141,7 +141,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
     set({
       activeFilters: {
         category: [],
-        accessibility: false,
       },
       filteredLocations: null,
       searchQuery: '',
@@ -198,7 +197,6 @@ export const useMapStore = create<MapStore>((set, get) => ({
       filteredLocations: null,
       activeFilters: {
         category: [],
-        accessibility: false,
       },
       currentPreset: null,
     });

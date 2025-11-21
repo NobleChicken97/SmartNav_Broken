@@ -115,11 +115,6 @@ export class LocationService {
   }
 
   // Utility methods for filtering and sorting
-  static filterLocationsByAccessibility(locations: Location[], accessibilityRequired: boolean): Location[] {
-    if (!accessibilityRequired) return locations;
-    return locations.filter(location => location.accessibility?.wheelchairAccessible === true);
-  }
-
   static sortLocationsByDistance(
     locations: Location[], 
     userLat: number, 
