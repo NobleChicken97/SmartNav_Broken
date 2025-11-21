@@ -229,7 +229,7 @@ const SearchFilters = memo<SearchFiltersProps>(({
               Location Types
             </h4>
             <div className="space-y-2">
-              {['hostel', 'class', 'faculty', 'entertainment', 'shop', 'parking', 'medical', 'sports', 'eatables', 'religious'].map((type) => (
+              {['hostel', 'class', 'faculty', 'entertainment', 'shop', 'parking', 'medical', 'sports', 'eatables', 'religious', 'bank'].map((type) => (
                 <label key={type} className="flex items-center hover:bg-emerald-50 px-2 py-1 rounded transition-colors cursor-pointer">
                   <input
                     type="checkbox"

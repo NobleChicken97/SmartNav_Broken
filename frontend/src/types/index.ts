@@ -55,7 +55,7 @@ export interface Location {
   _id: string;
   name: string;
   description?: string;
-  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious';
+  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious' | 'bank';
   coordinates: Coordinates;
   buildingId?: string;
   floor?: number | string;
@@ -68,7 +68,7 @@ export interface Location {
 export interface LocationFormData {
   name: string;
   description?: string;
-  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious';
+  type: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious' | 'bank';
   coordinates: Coordinates;
   buildingId?: string;
   floor?: number | string;
@@ -82,7 +82,7 @@ export type UpdateLocationData = Partial<LocationFormData>;
 
 export interface LocationFilters {
   q?: string;
-  type?: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious';
+  type?: 'hostel' | 'class' | 'faculty' | 'entertainment' | 'shop' | 'parking' | 'medical' | 'sports' | 'eatables' | 'religious' | 'bank';
   north?: number;
   south?: number;
   east?: number;

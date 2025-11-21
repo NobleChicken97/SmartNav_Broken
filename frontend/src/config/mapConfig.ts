@@ -55,6 +55,7 @@ export const MARKER_ICONS = {
   sports: '⚽',
   eatables: '🍽️',
   religious: '🕌',
+  bank: '🏦',
   // Legacy support for old types
   building: '🏫',
   room: '🚪',
@@ -79,6 +80,7 @@ export const MARKER_COLORS = {
   sports: '#22c55e',      // Bright Green
   eatables: '#f59e0b',    // Amber
   religious: '#8b5cf6',   // Purple
+  bank: '#059669',        // Emerald
   // Legacy colors
   building: '#2563eb',
   room: '#2563eb',

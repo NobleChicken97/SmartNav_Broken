@@ -899,6 +899,7 @@ const AdminDashboard = () => {
                     <option value="sports">⚽ Sports</option>
                     <option value="eatables">🍽️ Eatables</option>
                     <option value="religious">🕌 Religious</option>
+                    <option value="bank">🏦 Bank</option>
                   </select>
                 </div>
               </div>

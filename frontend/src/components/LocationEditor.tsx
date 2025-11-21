@@ -26,6 +26,7 @@ const LOCATION_TYPES = [
   { value: 'sports', label: '⚽ Sports', emoji: '⚽' },
   { value: 'eatables', label: '🍽️ Eatables', emoji: '🍽️' },
   { value: 'religious', label: '🕌 Religious', emoji: '🕌' },
+  { value: 'bank', label: '🏦 Bank', emoji: '🏦' },
 ];
 
 const LocationEditor = ({ isOpen, onClose, onSave, location, title }: LocationEditorProps) => {
